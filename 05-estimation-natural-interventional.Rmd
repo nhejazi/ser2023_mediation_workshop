@@ -369,6 +369,7 @@ First, we need to introduce some notation to describe the EIF for the NDE
 
 - Let $Q(M, W)$ denote $\E(Y\mid A=1, M, W) - \E(Y\mid A=0, M, W)$
 - We can now introduce the semiparametric efficient estimator:
+
 \begin{align*}
     \hat{\psi} &= \frac{1}{n} \sum_{i=1}^n \color{RoyalBlue}{\bigg\{
       \frac{\I(A_i=1)}{\hat{\P}(A_i=1 \mid W_i)}
@@ -399,13 +400,14 @@ First, we need to introduce some notation to describe the EIF for the NDE
 
 Thus we can change the expression of the estimator a bit as follows. First, some
 more notation that will be useful later:
+
 - Let $g(a\mid w)$ denote $\P(A=a\mid W=w)$
 - Let $e(a\mid m, w)$ denote $\P(A=a\mid M=m, W=w)$
 - Let $b(a, m, w)$ denote $\E(Y\mid A=a, M=m, W=w)$
 - The quantity being averaged can be re-expressed as follows
 
 \begin{align*}
-    &= \color{RoyalBlue}{\bigg\{ \frac{\I(A=1)}{g(0\mid W)}
+    & \color{RoyalBlue}{\bigg\{ \frac{\I(A=1)}{g(0\mid W)}
       \frac{e(0\mid M,W)}{e(1\mid M,W)} - \frac{\I(A=0)}{g(0\mid W)}\bigg\}}
       \times \color{Goldenrod}{[Y - b(A,M,W)]} \\
     &+ \color{RoyalBlue}{\frac{\I(A=0)}{g(0\mid W)}}
