@@ -81,6 +81,7 @@ where $(U_W, U_A,U_M, U_Y)$ are exogenous random errors.
 
 Recall that we need to assume the following to identify the above caual effects
 from our observed data:
+
 - $A \indep Y_{a,m} \mid W$
 - $M \indep Y_{a,m} \mid W, A$
 - $A \indep M_a \mid W$
