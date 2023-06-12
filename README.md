@@ -1,12 +1,11 @@
-# Causal Mediation Workshop Template [![Booklet](https://github.com/nhejazi/causal_mediation_workshops/actions/workflows/bookdown.yml/badge.svg)](https://github.com/nhejazi/causal_mediation_workshops/actions/workflows/bookdown.yml) [![Binder](http://mybinder.org/badge_logo.svg)](http://mybinder.org/v2/gh/nhejazi/causal_mediation_workshops/master?urlpath=rstudio)
+# SER 2023 Causal Mediation Workshop [![Booklet](https://github.com/nhejazi/ser2023_mediation_workshop/actions/workflows/bookdown.yml/badge.svg)](https://github.com/nhejazi/ser2023_mediation_workshop/actions/workflows/bookdown.yml)
 
-This is the _template_ GitHub repository for the workshop **Modern Causal
-Mediation Analysis**. Initially developed as a four-hour workshop
-by [Iván Díaz](https://www.idiaz.xyz/), [Nima Hejazi](https://nimahejazi.org),
-and [Kara Rudolph](https://kararudolph.github.io/), for the [SER 2021
-Meeting](https://code.nimahejazi.org/causal_mediation_workshops/), this
-fork of the materials serves as a starting point for the development of future
-workshops of similar content. The workshop materials are built using RStudio's
+This is the GitHub repository for the workshop **Modern Causal Mediation
+Analysis**, offered by by [Iván Díaz](https://www.idiaz.xyz/), [Nima
+Hejazi](https://nimahejazi.org), and [Kara
+Rudolph](https://kararudolph.github.io/) for the [SER 2023
+Meeting](https://epiresearch.org/annual-meeting/2023-meeting/2023-workshops/).
+The workshop materials are built using RStudio's
 [`bookdown`](https://www.rstudio.com/resources/webinars/introducing-bookdown/)
 `R` package; for more information on how to use `bookdown` see
 [bookdown.org](https://bookdown.org/).
@@ -14,6 +13,6 @@ workshops of similar content. The workshop materials are built using RStudio's
 ## Workshop materials
 
 * The public `bookdown` site may be accessed
-  [here](https://code.nimahejazi.org/causal_mediation_workshops/).
+  [here](https://code.nimahejazi.org/ser2023_mediation_workshop/).
 * The materials may be downloaded in PDF
-  [here](https://code.nimahejazi.org/causal_mediation_workshops/causal_mediation.pdf).
+  [here](https://code.nimahejazi.org/ser2023_mediation_workshop/causal_mediation.pdf).

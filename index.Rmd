@@ -1,7 +1,7 @@
 ---
 knit: "bookdown::render_book"
 title: "Modern Causal Mediation Analysis"
-subtitle: "[Workshop Template]"
+subtitle: "A Workshop at SER 2023"
 author: "[Iván Díaz](https://www.idiaz.xyz/),
   [Nima Hejazi](https://nimahejazi.org),
   [Kara Rudolph](https://kararudolph.github.io/)"
@@ -31,7 +31,7 @@ This open source, reproducible vignette accompanies a half-day workshop on
 modern methods for _causal mediation analysis_. While we encourage use of this
 `bookdown` site, for convenience, we have also made these workshop materials
 [available in
-PDF](https://code.nimahejazi.org/causal_mediation_workshops/causal_mediation.pdf).
+PDF](https://code.nimahejazi.org/ser2023_mediation_workshop/causal_mediation.pdf).
 
 ## About this workshop {#about}
 
@@ -66,16 +66,14 @@ parameter estimable from the observed data distribution). Familiarity with the
 * 08:45A-9:15A: Controlled direct effects, natural direct/indirect effects,
   interventional direct/indirect effects
   <!-- Kara, 30-->
-<!-- * 10:00A-10:20A: Stochastic mediation estimands -->
-  <!-- Nima, 15-->
 * 9:15A-9:25A: Choosing an estimand in real-world examples
   <!-- Kara, 10-->
 * 9:25A-10:00A: What is the EIF?!
   <!-- Ivan, 35-->
 * 10:00A-10:30A: Break + discussion
-* 10:30A-11:05A: Using the EIF for estimating the natural direct effect
+* 10:30A-11:05A: Using the EIF to estimate the natural direct effect
   <!-- Ivan, 35-->
-* 11:05A-12:00P: Example walkthrough with `R` packages for effect estimation
+* 11:05A-12:00P: Example walkthrough of `R` packages for effect estimation
   <!-- Nima, 55-->
 * 12:00A-12:30P: Wrap-up
 
