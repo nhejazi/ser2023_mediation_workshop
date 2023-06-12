@@ -15,19 +15,20 @@ decompose it as follows
 \end{equation*}
 
 To introduce some of the ideas that we will use for estimation of the NDE, let
-us first briefly discuss estimation of $E(Y_1)$ (estimation of $E(Y_0)$ can be
+us first briefly discuss estimation of $\E(Y_1)$ (estimation of $\E(Y_0)$ can be
 performed analogously).
 
 First, notice that under the assumption of no unmeasured confounders ($Y_1\indep
 A\mid W$), we have 
 
-\[ E(Y_1) = \E[ \E(Y \mid A=1, W) ]\]
+\[ \E(Y_1) = \E[ \E(Y \mid A=1, W) ]\]
 
 
 ## Option 1: G-computation estimator
 
-The first estimator of $E[ E(Y \mid A=1, W)]$ can be obtained in a
+The first estimator of $\E[ \E(Y \mid A=1, W)]$ can be obtained in a
 three step procedure:
+
 - Fit a regression for $Y$ on $A$ and $W$
 - Use the above regression to predict the outcome mean if everyone's
   $A$ is set to $A=1$
@@ -48,12 +49,14 @@ $$\frac{1}{n} \sum_{i=1}^n \hat{\E}(Y \mid A_i=1, W_i)$$
 An alternative method of estimation can be constructed after noticing that
 $$\E[\E(Y \mid A=1, W)] = \E \left[\frac{A}{\P(A=1\mid W)} Y \right],$$
 using the following procedure:
+
 - Fit a regression for $A$ and $W$
 - Use the above regression to predict the probability of treatment $A=1$
 - Compute the inverse probability weights $A_i / \hat{\P}(A_i =1 \mid W_i)$.
 - This weight will be zero for untreated units, and the inverse of the
   probability of treatment for treated units.
 - Compute the weighted average of the outcome:
+
 $$\frac{1}{n} \sum_{i=1}^n \frac{A_i}{\hat{\P}(A_i=1 \mid W_i)} Y_i$$
 
 - This estimator requires that the regression model for $\hat{\P}(A=1 \mid W_i)$
