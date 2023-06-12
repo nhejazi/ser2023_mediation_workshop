@@ -1,0 +1,26 @@
+new_session: yes
+delete_merged_file: true
+book_filename: "causal_mediation"
+clean: [packages.bib, causal_mediation.bbl]
+before_chapter_script: "_common.R"
+keep_tex: true
+
+language:
+  label:
+    fig: "FIGURE "
+    tab: "TABLE "
+  ui:
+    chapter_name: "Chapter "
+
+rmd_files: [
+  "index.Rmd",
+  "01-preface.Rmd",
+  "02-effects-def.Rmd",
+  "03-how-to-choose.Rmd",
+  "04-preliminaries-estimation.Rmd",
+  "05-estimation-natural-interventional.Rmd",
+  "06-estimation-code-walkthrough.Rmd",
+  "07-appx-additional-readings.Rmd",
+  "08-appx-stochastic-effects.Rmd",
+  "references.Rmd"
+]
