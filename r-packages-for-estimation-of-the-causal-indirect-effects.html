@@ -1402,9 +1402,9 @@ with only binary intermediate confounders, i.e., <span class="math inline">\(Z \
 <span id="cb40-14"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-14" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb40-15"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(interv_de_onestep)</span>
 <span id="cb40-16"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
-<span id="cb40-17"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lwr_ci param_est upr_ci var_est  eif_mean estimator param                </span></span>
-<span id="cb40-18"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                </span></span>
-<span id="cb40-19"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 -0.309     0.239  0.788  0.0782 -1.09e-15 onestep   direct_interventional</span></span></code></pre></div>
+<span id="cb40-17"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lwr_ci param_est upr_ci var_est eif_mean estimator param                </span></span>
+<span id="cb40-18"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                </span></span>
+<span id="cb40-19"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 -0.309     0.239  0.788  0.0782 1.94e-15 onestep   direct_interventional</span></span></code></pre></div>
 <ul>
 <li>We can similarly estimate the <em>interventional indirect effect</em>:</li>
 </ul>
@@ -1424,9 +1424,9 @@ with only binary intermediate confounders, i.e., <span class="math inline">\(Z \
 <span id="cb41-14"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-14" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb41-15"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(interv_ie_onestep)</span>
 <span id="cb41-16"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
-<span id="cb41-17"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lwr_ci param_est upr_ci var_est  eif_mean estimator param                  </span></span>
-<span id="cb41-18"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                  </span></span>
-<span id="cb41-19"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  0.524      1.06   1.60  0.0758 -1.66e-15 onestep   indirect_interventional</span></span></code></pre></div>
+<span id="cb41-17"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lwr_ci param_est upr_ci var_est eif_mean estimator param                  </span></span>
+<span id="cb41-18"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                  </span></span>
+<span id="cb41-19"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  0.524      1.06   1.60  0.0758 1.69e-16 onestep   indirect_interventional</span></span></code></pre></div>
 <ul>
 <li>From the above, we can conclude that the effect of participation on a sports
 team on BMI is largely through the interventional indirect effect (i.e.,
@@ -1521,7 +1521,7 @@ stoch_decomp_onestep <- medshift(
 )
 summary(stoch_decomp_onestep)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>   18.763158   19.099417   19.435676    0.029434 -3.5984e-16     onestep
+#>   18.763158   19.099417   19.435676    0.029434 -3.5415e-16     onestep
 ```
 
 * To estimate the stochastic direct effect, an extra step is necessary -- we

@@ -134,13 +134,13 @@ distribution $\P$
 ## Second weighted estimator
 - The parameter functional for the NDE can also be expressed as a combination of
   regression and weighting:
-  $$\E\bigg[\color{RoyalBlue}{\frac{\I(A=0)}{\P(A=0\mid W)}}
+  $$\E\bigg[\color{RoyalBlue}{\bigg\{\frac{\I(A=0)}{\P(A=0\mid W)}\bigg\}}
     \times \color{Goldenrod}{\E(Y \mid A=1, M, W) -
     \E(Y \mid A=0, M, W)}\bigg]$$
 
 - Thus, you can also construct a weighted estimator as
-  $$\frac{1}{n} \sum_{i=1}^n \bigg[\color{RoyalBlue}{ 
-    \frac{\I(A_i=0)}{\hat{\P}(A_i=0\mid W_i)}} \times
+  $$\frac{1}{n} \sum_{i=1}^n \bigg[\color{RoyalBlue}{ \bigg\{
+    \frac{\I(A_i=0)}{\hat{\P}(A_i=0\mid W_i)}\bigg\}} \times
     \color{Goldenrod}{\hat{\E}(Y \mid A=1, M_i, W_i) -
     \hat{\E}(Y \mid A=0, M_i, W_i)}\bigg]$$
 
