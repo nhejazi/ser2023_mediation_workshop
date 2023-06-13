@@ -300,6 +300,131 @@ mean(pred_pseudo)
 knitr::include_graphics(here::here("img", "ctndag.png"))
 
 
+## \dimendef\prevdepth=0
+
+## \pgfdeclarelayer{background}
+
+## \pgfsetlayers{background,main}
+
+## \usetikzlibrary{arrows,positioning}
+
+## \tikzset{
+
+## >=stealth',
+
+## punkt/.style={
+
+## rectangle,
+
+## rounded corners,
+
+## draw=black, very thick,
+
+## text width=6.5em,
+
+## minimum height=2em,
+
+## text centered},
+
+## pil/.style={
+
+## ->,
+
+## thick,
+
+## shorten <=2pt,
+
+## shorten >=2pt,}
+
+## }
+
+## \newcommand{\Vertex}[2]
+
+## {\node[minimum width=0.6cm,inner sep=0.05cm] (#2) at (#1) {$#2$};
+
+## }
+
+## \newcommand{\VertexR}[2]
+
+## {\node[rectangle, draw, minimum width=0.6cm,inner sep=0.05cm] (#2) at (#1) {$#2$};
+
+## }
+
+## \newcommand{\ArrowR}[3]
+
+## { \begin{pgfonlayer}{background}
+
+## \draw[->,#3] (#1) to[bend right=30] (#2);
+
+## \end{pgfonlayer}
+
+## }
+
+## \newcommand{\ArrowL}[3]
+
+## { \begin{pgfonlayer}{background}
+
+## \draw[->,#3] (#1) to[bend left=45] (#2);
+
+## \end{pgfonlayer}
+
+## }
+
+## \newcommand{\EdgeL}[3]
+
+## { \begin{pgfonlayer}{background}
+
+## \draw[dashed,#3] (#1) to[bend left=45] (#2);
+
+## \end{pgfonlayer}
+
+## }
+
+## \newcommand{\EdgeR}[3]
+
+## { \begin{pgfonlayer}{background}
+
+## \draw[dashed,#3] (#1) to[bend right=-45] (#2);
+
+## \end{pgfonlayer}
+
+## }
+
+## \newcommand{\Arrow}[3]
+
+## { \begin{pgfonlayer}{background}
+
+## \draw[->,#3] (#1) -- +(#2);
+
+## \end{pgfonlayer}
+
+## }
+
+## 
+
+## \begin{tikzpicture}
+
+##   \Vertex{0, 1}{Z_0}
+
+##   \Vertex{0, -1}{Z_1}
+
+##   \Vertex{-2, 0}{U_Z}
+
+##   \Vertex{2, 1}{M_0}
+
+##   \Vertex{4, -1}{Y_{1, m}}
+
+##   \Arrow{Z_0}{M_0}{black}
+
+##   \Arrow{Z_1}{Y_{1, m}}{black}
+
+##   \Arrow{U_Z}{Z_0}{black}
+
+##   \Arrow{U_Z}{Z_1}{black}
+
+## \end{tikzpicture}
+
+
 ## ---- echo=FALSE, fig.cap="", fig.ext=if (knitr:::is_latex_output()) "pdf" else "png", out.width = "50%", results="asis"----
 knitr::include_graphics(here::here("img", "graphic4b.png"))
 
@@ -338,6 +463,6 @@ pred_pseudo <- predict(fit_pseudo, data.frame(a = 0, w = w))
 mean(pred_pseudo)
 
 
-## ---- echo=FALSE, fig.cap="", fig.ext=if (knitr:::is_latex_output()) "pdf" else "png", out.width = "125%", results="asis"----
+## ---- echo=FALSE, fig.cap="Excerpted from @rudolph2019causal", fig.ext=if (knitr:::is_latex_output()) "pdf" else "png", out.width = "125%", results="asis"----
 knitr::include_graphics(here::here("img", "table1.png"))
 

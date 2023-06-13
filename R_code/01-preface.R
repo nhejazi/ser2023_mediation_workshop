@@ -1,4 +1,4 @@
-## ---- echo=FALSE, fig.cap="", out.width = '50%'-------------------------------
+## ---- echo = FALSE, fig.cap="", out.width = '100%'----------------------------
 knitr::include_graphics(here::here("img", "ctndag.png"))
 
 

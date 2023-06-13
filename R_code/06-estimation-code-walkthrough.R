@@ -344,47 +344,50 @@ summary(interv_ie_onestep)
 
 
 ## ----delta_ipsi---------------------------------------------------------------
-delta_shift_ipsi <- 3
+delta_shift_ipsi <- 2
 
 
-## ----efficient_est, eval=FALSE------------------------------------------------
-## # let's compute the parameter where A (but not Z) are shifted
-## pide_decomp_onestep <- medshift(
-##   W = W, A = A, Z = Z, Y = Y,
-##   delta = delta_shift_ipsi,
-##   g_learners = lasso_lrnr,
-##   e_learners = lasso_lrnr,
-##   m_learners = lasso_lrnr,
-##   estimator = "onestep",
-##   estimator_args = list(cv_folds = 5)
-## )
-## summary(pide_decomp_onestep)
+## ----stoch_decomp_os----------------------------------------------------------
+# compute one-step estimate of the decomposition term of the (in)direct effects
+stoch_decomp_onestep <- medshift(
+  W = weight_behavior[, c("age", "sex", "race", "tvhours")],
+  A = (as.numeric(weight_behavior$sports) - 1),
+  Z = weight_behavior[, c("snack", "exercises", "overweigh")],
+  Y = weight_behavior$bmi,
+  delta = delta_shift_ipsi,
+  g_learners = lasso_lrnr,
+  e_learners = lasso_lrnr,
+  m_learners = lasso_lrnr,
+  estimator = "onestep",
+  estimator_args = list(cv_folds = 5)
+)
+summary(stoch_decomp_onestep)
 
 
-## ----linear_contrast_delta, eval=FALSE----------------------------------------
-## # convenience function to compute inference via delta method: EY1 - EY0
-## linear_contrast <- function(params, eifs, ci_level = 0.95) {
-##   # bounds for confidence interval
-##   ci_norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - ci_level) / 2))
-##   param_est <- params[[1]] - params[[2]]
-##   eif <- eifs[[1]] - eifs[[2]]
-##   se_eif <- sqrt(var(eif) / length(eif))
-##   param_ci <- param_est + ci_norm_bounds * se_eif
-##   # parameter and inference
-##   out <- c(param_ci[1], param_est, param_ci[2])
-##   names(out) <- c("lwr_ci", "param_est", "upr_ci")
-##   return(out)
-## }
+## ----linear_contrast_delta----------------------------------------------------
+# convenience function to compute inference via delta method: EY1 - EY0
+linear_contrast <- function(params, eifs, ci_level = 0.95) {
+  # bounds for confidence interval
+  ci_norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - ci_level) / 2))
+  param_est <- params[[1]] - params[[2]]
+  eif <- eifs[[1]] - eifs[[2]]
+  se_eif <- sqrt(var(eif) / length(eif))
+  param_ci <- param_est + ci_norm_bounds * se_eif
+  # parameter and inference
+  out <- c(param_ci[1], param_est, param_ci[2])
+  names(out) <- c("lwr_ci", "param_est", "upr_ci")
+  return(out)
+}
 
 
-## ----comp_de_binary, eval=FALSE-----------------------------------------------
-## # parameter estimates and EIFs for components of direct effect
-## EY <- mean(Y)
-## eif_EY <- Y - EY
-## params_de <- list(theta_eff$theta, EY)
-## eifs_de <- list(theta_eff$eif, eif_EY)
-## 
-## # direct effect = EY - estimated quantity
-## de_est <- linear_contrast(params_de, eifs_de)
-## de_est
+## ----stoch_de_ipsi------------------------------------------------------------
+# parameter estimates and EIFs for components of direct effect
+EY <- mean(weight_behavior$bmi)
+eif_EY <- weight_behavior$bmi - EY
+params_de <- list(stoch_decomp_onestep$theta, EY)
+eifs_de <- list(stoch_decomp_onestep$eif, eif_EY)
+
+# direct effect = EY - estimated quantity
+de_est <- linear_contrast(params_de, eifs_de)
+de_est
 
