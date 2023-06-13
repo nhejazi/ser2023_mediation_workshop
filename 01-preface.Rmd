@@ -6,12 +6,11 @@
   to buprenorphine–naloxone (BUP-NX) in preventing relapse among those with OUD
   starting medication in inpatient treatment settings.
 - An analysis of potential moderators of medication effectiveness found that
-  homeless individuals had a lower risk of relapse on XRNTX, whereas
+  homeless individuals had a lower risk of relapse on XR-NTX, whereas
   non-homeless individuals had a lower risk of relapse on BUP-NX.
 - The effect sizes were similarly large for these groups but in opposite
   directions.
-- The underlying mechanisms for these differences have not yet been explored. We
-  can to identify these mechanisms by using mediation analysis.
+- We can to use mediation analysis to explore the mechanisms underlying these differences.
 
 - Key questions:
   - Do differences in the effects of treatment (comparing two medications for
@@ -255,7 +254,7 @@ model_ (NPSEM), also known as _structural causal model_ (SCM):
   contrary to fact <!--we would be able to perform interventions on the
   random variables of interest-->
 
-### We will constantly use the following counterfactual variables: {-}
+### We will use the following counterfactual variables: {-}
 
 - $Y_a$ is a counterfactual variable in a hypothetical world where $\P(A=a)=1$
   with probability one for some value $a$
