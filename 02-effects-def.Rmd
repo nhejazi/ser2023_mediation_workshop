@@ -457,10 +457,11 @@ Intuitively:
 -->
 
 However:
+
 - We can actually actually identify the NIE/NDE in the above setting if we are
   willing to invoke monotonicity between a treatment and one or more binary
   treatment-induced confounders [@tchetgen2014identification].
-  - Assuming monotonicity is also sometimes referred to as assuming "no
+- Assuming monotonicity is also sometimes referred to as assuming "no
     defiers"---in other words, assuming that there are no individuals who would
     do the opposite of the encouragement.
 - Monotonicity may seem like a restrictive assumption, but may be reasonable in
