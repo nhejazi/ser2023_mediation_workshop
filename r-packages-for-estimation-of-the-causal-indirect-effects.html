@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 7 R packages for estimation of the causal (in)direct effects | Modern Causal Mediation Analysis</title>
+  <meta name="description" content="Open source, reproducible teaching materials accompanying half or full-day conference workshops on causal mediation analysis." />
+  <meta name="generator" content="bookdown 0.26.3 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 7 R packages for estimation of the causal (in)direct effects | Modern Causal Mediation Analysis" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Open source, reproducible teaching materials accompanying half or full-day conference workshops on causal mediation analysis." />
+  <meta name="github-repo" content="nhejazi/causal_mediation_workshops" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 7 R packages for estimation of the causal (in)direct effects | Modern Causal Mediation Analysis" />
+  
+  <meta name="twitter:description" content="Open source, reproducible teaching materials accompanying half or full-day conference workshops on causal mediation analysis." />
+  
+
+<meta name="author" content="Iván Díaz, Nima Hejazi, Kara Rudolph" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html"/>
+<link rel="next" href="appendix-additional-topics-of-interest.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<span class="math inline">
+\(\DeclareMathOperator{\expit}{expit}\)
+\(\DeclareMathOperator{\logit}{logit}\)
+\(\DeclareMathOperator*{\argmin}{\arg\!\min}\)
+\(\newcommand{\indep}{\perp\!\!\!\perp}\)
+\(\newcommand{\coloneqq}{\mathrel{=}}\)
+\(\newcommand{\R}{\mathbb{R}}\)
+\(\newcommand{\E}{\mathbb{E}}\)
+\(\newcommand{\M}{\mathcal{M}}\)
+\(\renewcommand{\P}{\mathbb{P}}\)
+\(\newcommand{\I}{\mathbb{I}}\)
+\(\newcommand{\1}{\mathbbm{1}}\)
+</span>
+
+<script>
+/* ========================================================================
+ * Bootstrap: transition.js v3.3.7
+ * http://getbootstrap.com/javascript/#transitions
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
+  // ============================================================
+
+  function transitionEnd() {
+    var el = document.createElement('bootstrap')
+
+    var transEndEventNames = {
+      WebkitTransition : 'webkitTransitionEnd',
+      MozTransition    : 'transitionend',
+      OTransition      : 'oTransitionEnd otransitionend',
+      transition       : 'transitionend'
+    }
+
+    for (var name in transEndEventNames) {
+      if (el.style[name] !== undefined) {
+        return { end: transEndEventNames[name] }
+      }
+    }
+
+    return false // explicit for ie8 (  ._.)
+  }
+
+  // http://blog.alexmaccaw.com/css-transitions
+  $.fn.emulateTransitionEnd = function (duration) {
+    var called = false
+    var $el = this
+    $(this).one('bsTransitionEnd', function () { called = true })
+    var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
+    setTimeout(callback, duration)
+    return this
+  }
+
+  $(function () {
+    $.support.transition = transitionEnd()
+
+    if (!$.support.transition) return
+
+    $.event.special.bsTransitionEnd = {
+      bindType: $.support.transition.end,
+      delegateType: $.support.transition.end,
+      handle: function (e) {
+        if ($(e.target).is(this)) return e.handleObj.handler.apply(this, arguments)
+      }
+    }
+  })
+
+}(jQuery);
+</script>
+<script>
+/* ========================================================================
+ * Bootstrap: collapse.js v3.3.7
+ * http://getbootstrap.com/javascript/#collapse
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+/* jshint latedef: false */
+
++function ($) {
+  'use strict';
+
+  // COLLAPSE PUBLIC CLASS DEFINITION
+  // ================================
+
+  var Collapse = function (element, options) {
+    this.$element      = $(element)
+    this.options       = $.extend({}, Collapse.DEFAULTS, options)
+    this.$trigger      = $('[data-toggle="collapse"][href="#' + element.id + '"],' +
+                           '[data-toggle="collapse"][data-target="#' + element.id + '"]')
+    this.transitioning = null
+
+    if (this.options.parent) {
+      this.$parent = this.getParent()
+    } else {
+      this.addAriaAndCollapsedClass(this.$element, this.$trigger)
+    }
+
+    if (this.options.toggle) this.toggle()
+  }
+
+  Collapse.VERSION  = '3.3.7'
+
+  Collapse.TRANSITION_DURATION = 350
+
+  Collapse.DEFAULTS = {
+    toggle: true
+  }
+
+  Collapse.prototype.dimension = function () {
+    var hasWidth = this.$element.hasClass('width')
+    return hasWidth ? 'width' : 'height'
+  }
+
+  Collapse.prototype.show = function () {
+    if (this.transitioning || this.$element.hasClass('in')) return
+
+    var activesData
+    var actives = this.$parent && this.$parent.children('.panel').children('.in, .collapsing')
+
+    if (actives && actives.length) {
+      activesData = actives.data('bs.collapse')
+      if (activesData && activesData.transitioning) return
+    }
+
+    var startEvent = $.Event('show.bs.collapse')
+    this.$element.trigger(startEvent)
+    if (startEvent.isDefaultPrevented()) return
+
+    if (actives && actives.length) {
+      Plugin.call(actives, 'hide')
+      activesData || actives.data('bs.collapse', null)
+    }
+
+    var dimension = this.dimension()
+
+    this.$element
+      .removeClass('collapse')
+      .addClass('collapsing')[dimension](0)
+      .attr('aria-expanded', true)
+
+    this.$trigger
+      .removeClass('collapsed')
+      .attr('aria-expanded', true)
+
+    this.transitioning = 1
+
+    var complete = function () {
+      this.$element
+        .removeClass('collapsing')
+        .addClass('collapse in')[dimension]('')
+      this.transitioning = 0
+      this.$element
+        .trigger('shown.bs.collapse')
+    }
+
+    if (!$.support.transition) return complete.call(this)
+
+    var scrollSize = $.camelCase(['scroll', dimension].join('-'))
+
+    this.$element
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)[dimension](this.$element[0][scrollSize])
+  }
+
+  Collapse.prototype.hide = function () {
+    if (this.transitioning || !this.$element.hasClass('in')) return
+
+    var startEvent = $.Event('hide.bs.collapse')
+    this.$element.trigger(startEvent)
+    if (startEvent.isDefaultPrevented()) return
+
+    var dimension = this.dimension()
+
+    this.$element[dimension](this.$element[dimension]())[0].offsetHeight
+
+    this.$element
+      .addClass('collapsing')
+      .removeClass('collapse in')
+      .attr('aria-expanded', false)
+
+    this.$trigger
+      .addClass('collapsed')
+      .attr('aria-expanded', false)
+
+    this.transitioning = 1
+
+    var complete = function () {
+      this.transitioning = 0
+      this.$element
+        .removeClass('collapsing')
+        .addClass('collapse')
+        .trigger('hidden.bs.collapse')
+    }
+
+    if (!$.support.transition) return complete.call(this)
+
+    this.$element
+      [dimension](0)
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)
+  }
+
+  Collapse.prototype.toggle = function () {
+    this[this.$element.hasClass('in') ? 'hide' : 'show']()
+  }
+
+  Collapse.prototype.getParent = function () {
+    return $(this.options.parent)
+      .find('[data-toggle="collapse"][data-parent="' + this.options.parent + '"]')
+      .each($.proxy(function (i, element) {
+        var $element = $(element)
+        this.addAriaAndCollapsedClass(getTargetFromTrigger($element), $element)
+      }, this))
+      .end()
+  }
+
+  Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) {
+    var isOpen = $element.hasClass('in')
+
+    $element.attr('aria-expanded', isOpen)
+    $trigger
+      .toggleClass('collapsed', !isOpen)
+      .attr('aria-expanded', isOpen)
+  }
+
+  function getTargetFromTrigger($trigger) {
+    var href
+    var target = $trigger.attr('data-target')
+      || (href = $trigger.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
+
+    return $(target)
+  }
+
+
+  // COLLAPSE PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.collapse')
+      var options = $.extend({}, Collapse.DEFAULTS, $this.data(), typeof option == 'object' && option)
+
+      if (!data && options.toggle && /show|hide/.test(option)) options.toggle = false
+      if (!data) $this.data('bs.collapse', (data = new Collapse(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.collapse
+
+  $.fn.collapse             = Plugin
+  $.fn.collapse.Constructor = Collapse
+
+
+  // COLLAPSE NO CONFLICT
+  // ====================
+
+  $.fn.collapse.noConflict = function () {
+    $.fn.collapse = old
+    return this
+  }
+
+
+  // COLLAPSE DATA-API
+  // =================
+
+  $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
+    var $this   = $(this)
+
+    if (!$this.attr('data-target')) e.preventDefault()
+
+    var $target = getTargetFromTrigger($this)
+    var data    = $target.data('bs.collapse')
+    var option  = data ? 'toggle' : $this.data()
+
+    Plugin.call($target, option)
+  })
+
+}(jQuery);
+</script>
+<script>
+window.initializeCodeFolding = function(show) {
+
+  // handlers for show-all and hide all
+  $("#rmd-show-all-code").click(function() {
+    // close the dropdown menu when an option is clicked
+    $("#allCodeButton").dropdown("toggle");
+      // R show code
+      $('div.r-code-collapse').each(function() {
+        $(this).collapse('show');
+      });
+      // Python show code
+      $('div.py-code-collapse').each(function() {
+        $(this).collapse('show');
+      }); 
+      // Bash show code
+      $('div.sh-code-collapse').each(function() {
+        $(this).collapse('show');
+      }); 
+      
+  });
+  $("#rmd-hide-all-code").click(function() {
+      // close the dropdown menu when an option is clicked
+      $("#allCodeButton").dropdown("toggle");
+      // Hide R code
+      $('div.r-code-collapse').each(function() {
+        $(this).collapse('hide');
+      });
+      // Hide Python code
+      $('div.py-code-collapse').each(function() {
+        $(this).collapse('hide');
+      });
+      // Hide Bash code
+      $('div.sh-code-collapse').each(function() {
+        $(this).collapse('hide');
+      });
+  });
+
+
+  // index for unique code element ids
+  var r_currentIndex  = 1;   // for R code
+  var py_currentIndex = 1;   // for Python code
+  var sh_currentIndex  = 1;   // for shell code
+
+  // select Python chunks
+  var pyCodeBlocks = $('pre.python');
+  pyCodeBlocks.each(function() {
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse py-code-collapse"></div>');
+    if (show)
+      div.addClass('in');
+    var id = 'pycode-643E0F36' + py_currentIndex++;
+    div.attr('id', id);
+    // "this" refers the code chunk
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+    $(this).css('background-color','#ebfaeb');  // change color of chunk background
+    
+    // add a show code button right above
+    var showCodeText = $('<span>' + (show ? 'Hide Python code' : 'Python code') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs code-folding-btn pull-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-target', '#' + id)
+        .attr('aria-expanded', show)
+        .attr('aria-controls', id);    
+        
+    // change the background color of the button
+    showCodeButton.css('background-color','#009900');
+        
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+    div.before(buttonRow);    
+    
+    // update state of button on show/hide
+    div.on('hidden.bs.collapse', function () {
+      showCodeText.text('Python code');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide Python code');
+    });  
+   });
+  
+  
+
+  // select Bash shell chunks
+  var shCodeBlocks = $('pre.bash');
+  shCodeBlocks.each(function() {
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse sh-code-collapse"></div>');
+    if (show)
+      div.addClass('in');
+    var id = 'shcode-643E0F36' + sh_currentIndex++;
+    div.attr('id', id);
+    // "this" refers the code chunk
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+    $(this).css('background-color','#A0A0A0');  // change color of chunk background
+    
+    // add a show code button right above
+    var showCodeText = $('<span>' + (show ? 'Hide Bash code' : 'Bash code') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs code-folding-btn pull-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-target', '#' + id)
+        .attr('aria-expanded', show)
+        .attr('aria-controls', id);    
+        
+    // change the background color of the button
+    showCodeButton.css('background-color','#cc7a00');
+        
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+    div.before(buttonRow);    
+    
+    // update state of button on show/hide
+    div.on('hidden.bs.collapse', function () {
+      showCodeText.text('Bash code');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide Bash code');
+    });  
+   });  
+
+
+  // select all R code blocks
+  // var rCodeBlocks = $('pre.sourceCode, pre.r, pre.bash, pre.sql, pre.cpp, pre.stan');
+  // adding pre.sourceCode confuses the Python button
+  var rCodeBlocks = $('pre.r, pre.sql, pre.cpp, pre.stan');
+  rCodeBlocks.each(function() {
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse r-code-collapse"></div>');
+    if (show)
+      div.addClass('in');
+    var id = 'rcode-643E0F36' + r_currentIndex++;
+    div.attr('id', id);
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+    $(this).css('background-color','#e6faff'); // change color of chunk background
+
+    // add a show code button right above
+    var showCodeText = $('<span>' + (show ? 'Hide R code' : 'R code') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs code-folding-btn pull-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-target', '#' + id)
+        .attr('aria-expanded', show)
+        .attr('aria-controls', id);
+    
+    // change the background color of the button        
+    showCodeButton.css('background-color','#0000ff');
+    
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+    div.before(buttonRow);
+
+    // update state of button on show/hide
+    div.on('hidden.bs.collapse', function () {
+      showCodeText.text('R code');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide R code');
+    });
+  });
+
+}
+</script>
+<script>
+/* ========================================================================
+ * Bootstrap: dropdown.js v3.3.7
+ * http://getbootstrap.com/javascript/#dropdowns
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // DROPDOWN CLASS DEFINITION
+  // =========================
+
+  var backdrop = '.dropdown-backdrop'
+  var toggle   = '[data-toggle="dropdown"]'
+  var Dropdown = function (element) {
+    $(element).on('click.bs.dropdown', this.toggle)
+  }
+
+  Dropdown.VERSION = '3.3.7'
+
+  function getParent($this) {
+    var selector = $this.attr('data-target')
+
+    if (!selector) {
+      selector = $this.attr('href')
+      selector = selector && /#[A-Za-z]/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
+    }
+
+    var $parent = selector && $(selector)
+
+    return $parent && $parent.length ? $parent : $this.parent()
+  }
+
+  function clearMenus(e) {
+    if (e && e.which === 3) return
+    $(backdrop).remove()
+    $(toggle).each(function () {
+      var $this         = $(this)
+      var $parent       = getParent($this)
+      var relatedTarget = { relatedTarget: this }
+
+      if (!$parent.hasClass('open')) return
+
+      if (e && e.type == 'click' && /input|textarea/i.test(e.target.tagName) && $.contains($parent[0], e.target)) return
+
+      $parent.trigger(e = $.Event('hide.bs.dropdown', relatedTarget))
+
+      if (e.isDefaultPrevented()) return
+
+      $this.attr('aria-expanded', 'false')
+      $parent.removeClass('open').trigger($.Event('hidden.bs.dropdown', relatedTarget))
+    })
+  }
+
+  Dropdown.prototype.toggle = function (e) {
+    var $this = $(this)
+
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    clearMenus()
+
+    if (!isActive) {
+      if ('ontouchstart' in document.documentElement && !$parent.closest('.navbar-nav').length) {
+        // if mobile we use a backdrop because click events don't delegate
+        $(document.createElement('div'))
+          .addClass('dropdown-backdrop')
+          .insertAfter($(this))
+          .on('click', clearMenus)
+      }
+
+      var relatedTarget = { relatedTarget: this }
+      $parent.trigger(e = $.Event('show.bs.dropdown', relatedTarget))
+
+      if (e.isDefaultPrevented()) return
+
+      $this
+        .trigger('focus')
+        .attr('aria-expanded', 'true')
+
+      $parent
+        .toggleClass('open')
+        .trigger($.Event('shown.bs.dropdown', relatedTarget))
+    }
+
+    return false
+  }
+
+  Dropdown.prototype.keydown = function (e) {
+    if (!/(38|40|27|32)/.test(e.which) || /input|textarea/i.test(e.target.tagName)) return
+
+    var $this = $(this)
+
+    e.preventDefault()
+    e.stopPropagation()
+
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    if (!isActive && e.which != 27 || isActive && e.which == 27) {
+      if (e.which == 27) $parent.find(toggle).trigger('focus')
+      return $this.trigger('click')
+    }
+
+    var desc = ' li:not(.disabled):visible a'
+    var $items = $parent.find('.dropdown-menu' + desc)
+
+    if (!$items.length) return
+
+    var index = $items.index(e.target)
+
+    if (e.which == 38 && index > 0)                 index--         // up
+    if (e.which == 40 && index < $items.length - 1) index++         // down
+    if (!~index)                                    index = 0
+
+    $items.eq(index).trigger('focus')
+  }
+
+
+  // DROPDOWN PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this = $(this)
+      var data  = $this.data('bs.dropdown')
+
+      if (!data) $this.data('bs.dropdown', (data = new Dropdown(this)))
+      if (typeof option == 'string') data[option].call($this)
+    })
+  }
+
+  var old = $.fn.dropdown
+
+  $.fn.dropdown             = Plugin
+  $.fn.dropdown.Constructor = Dropdown
+
+
+  // DROPDOWN NO CONFLICT
+  // ====================
+
+  $.fn.dropdown.noConflict = function () {
+    $.fn.dropdown = old
+    return this
+  }
+
+
+  // APPLY TO STANDARD DROPDOWN ELEMENTS
+  // ===================================
+
+  $(document)
+    .on('click.bs.dropdown.data-api', clearMenus)
+    .on('click.bs.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
+    .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
+    .on('keydown.bs.dropdown.data-api', toggle, Dropdown.prototype.keydown)
+    .on('keydown.bs.dropdown.data-api', '.dropdown-menu', Dropdown.prototype.keydown)
+
+}(jQuery);
+</script>
+<style type="text/css">
+.code-folding-btn {
+  margin-bottom: 4px;
+}
+
+.row { display: flex; }
+.collapse { display: none; }
+.in { display:block }
+.pull-right > .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    font-size: 14px;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+
+.open > .dropdown-menu {
+    display: block;
+    color: #ffffff;
+    background-color: #ffffff;
+    background-image: none;
+    border-color: #92897e;
+}
+
+.dropdown-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #e95420;
+}
+
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #e95420;
+  outline: 0;
+}
+.dropdown-menu > .disabled > a,
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+  color: #aea79f;
+}
+
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+
+.btn {
+  display: inline-block;
+  margin-bottom: 1;
+  font-weight: normal;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.btn:hover,
+.btn:focus,
+.btn.focus {
+  color: #ffffff;
+  text-decoration: none;
+}
+.btn:active,
+.btn.active {
+  background-image: none;
+  outline: 0;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn.disabled,
+.btn[disabled],
+fieldset[disabled] .btn {
+  cursor: not-allowed;
+  filter: alpha(opacity=65);
+  opacity: 0.65;
+  box-shadow: none;
+}
+a.btn.disabled,
+fieldset[disabled] a.btn {
+  pointer-events: none;
+}
+.btn-default {
+  color: #ffffff;
+  background-color: #aea79f; #important
+  border-color: #aea79f;
+}
+
+.btn-default:focus,
+.btn-default.focus {
+  color: #ffffff;
+  background-color: #978e83;
+  border-color: #6f675e;
+}
+
+.btn-default:hover {
+  color: #ffffff;
+  background-color: #978e83;
+  border-color: #92897e;
+}
+.btn-default:active,
+.btn-default.active,
+.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+  border-radius: 0;
+}
+.btn-group > .btn:first-child {
+  margin-left: 0;
+}
+.btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.btn-group > .btn:last-child:not(:first-child),
+.btn-group > .dropdown-toggle:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.btn-group > .btn-group {
+  float: left;
+}
+.btn-group > .btn-group:not(:first-child):not(:last-child) > .btn {
+  border-radius: 0;
+}
+.btn-group > .btn-group:first-child:not(:last-child) > .btn:last-child,
+.btn-group > .btn-group:first-child:not(:last-child) > .dropdown-toggle {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.btn-group > .btn-group:last-child:not(:first-child) > .btn:first-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.btn-group .dropdown-toggle:active,
+.btn-group.open .dropdown-toggle {
+  outline: 0;
+}
+.btn-group > .btn + .dropdown-toggle {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+.btn-group > .btn-lg + .dropdown-toggle {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+.btn-group.open .dropdown-toggle {
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-group.open .dropdown-toggle.btn-link {
+  box-shadow: none;
+}
+</style>
+<script>
+var str = '<div class="btn-group pull-right" style="position: fixed; right: 50px; top: 10px; z-index: 200"><button type="button" class="btn btn-default btn-xs dropdown-toggle" id="allCodeButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-_extension-text-contrast=""><span>Code</span> <span class="caret"></span></button><ul class="dropdown-menu" style="min-width: 50px;"><li><a id="rmd-show-all-code" href="#">Show All Code</a></li><li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li></ul></div>';
+document.write(str);
+</script>
+<script>
+$(document).ready(function () {
+  // show code by default. Use "show" === "hide" to hide
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+<link rel="stylesheet" href="css/toc.css" type="text/css" />
+<link rel="stylesheet" href="css/center.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><strong><a href="./">Causal Mediation Analysis</a></strong></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome!</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#about"><i class="fa fa-check"></i><b>0.1</b> About this workshop</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#schedule"><i class="fa fa-check"></i><b>0.2</b> Tentative schedule</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#instructors"><i class="fa fa-check"></i><b>0.3</b> About the instructors</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#iván-díaz"><i class="fa fa-check"></i>Iván Díaz</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#nima-hejazi"><i class="fa fa-check"></i>Nima Hejazi</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#kara-rudolph"><i class="fa fa-check"></i>Kara Rudolph</a></li>
+</ul></li>
+<li class="chapter" data-level="0.4" data-path="index.html"><a href="index.html#repro"><i class="fa fa-check"></i><b>0.4</b> Reproducibility</a></li>
+<li class="chapter" data-level="0.5" data-path="index.html"><a href="index.html#setup"><i class="fa fa-check"></i><b>0.5</b> Setup instructions</a>
+<ul>
+<li class="chapter" data-level="0.5.1" data-path="index.html"><a href="index.html#r-and-rstudio"><i class="fa fa-check"></i><b>0.5.1</b> R and RStudio</a></li>
+<li class="chapter" data-level="0.5.2" data-path="index.html"><a href="index.html#renv"><i class="fa fa-check"></i><b>0.5.2</b> Virtual Enironment setup with <code>renv</code></a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="mediation.html"><a href="mediation.html"><i class="fa fa-check"></i><b>1</b> Causal mediation analysis intro</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="mediation.html"><a href="mediation.html#motivating-study"><i class="fa fa-check"></i><b>1.1</b> Motivating study</a></li>
+<li class="chapter" data-level="1.2" data-path="mediation.html"><a href="mediation.html#what-is-causal-mediation-analysis"><i class="fa fa-check"></i><b>1.2</b> What is causal mediation analysis?</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="mediation.html"><a href="mediation.html#why-are-the-causal-methods-that-we-will-discuss-today-important"><i class="fa fa-check"></i><b>1.2.1</b> Why are the causal methods that we will discuss today important?</a></li>
+<li class="chapter" data-level="1.2.2" data-path="mediation.html"><a href="mediation.html#r-example"><i class="fa fa-check"></i><b>1.2.2</b> <code>R</code> Example:</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="mediation.html"><a href="mediation.html#causal-mediation-models"><i class="fa fa-check"></i><b>1.3</b> Causal mediation models</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="mediation.html"><a href="mediation.html#no-intermediate-confounders"><i class="fa fa-check"></i><b>1.3.1</b> No intermediate confounders</a></li>
+<li class="chapter" data-level="1.3.2" data-path="mediation.html"><a href="mediation.html#intermediate-confounders"><i class="fa fa-check"></i><b>1.3.2</b> Intermediate confounders</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="mediation.html"><a href="mediation.html#counterfactuals"><i class="fa fa-check"></i><b>1.4</b> Counterfactuals</a>
+<ul>
+<li class="chapter" data-level="" data-path="mediation.html"><a href="mediation.html#we-will-constantly-use-the-following-counterfactual-variables"><i class="fa fa-check"></i>We will constantly use the following counterfactual variables:</a></li>
+<li class="chapter" data-level="1.4.1" data-path="mediation.html"><a href="mediation.html#how-are-counterfactuals-defined"><i class="fa fa-check"></i><b>1.4.1</b> How are counterfactuals defined?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="estimands.html"><a href="estimands.html"><i class="fa fa-check"></i><b>2</b> Types of path-specific causal mediation effects</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="estimands.html"><a href="estimands.html#controlled-direct-effects"><i class="fa fa-check"></i><b>2.1</b> Controlled direct effects</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="estimands.html"><a href="estimands.html#identification-assumptions"><i class="fa fa-check"></i><b>2.1.1</b> Identification assumptions:</a></li>
+<li class="chapter" data-level="2.1.2" data-path="estimands.html"><a href="estimands.html#is-this-the-estimand-i-want"><i class="fa fa-check"></i><b>2.1.2</b> Is this the estimand I want?</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="estimands.html"><a href="estimands.html#natural-direct-and-indirect-effects"><i class="fa fa-check"></i><b>2.2</b> Natural direct and indirect effects</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="estimands.html"><a href="estimands.html#identification-assumptions-1"><i class="fa fa-check"></i><b>2.2.1</b> Identification assumptions:</a></li>
+<li class="chapter" data-level="2.2.2" data-path="estimands.html"><a href="estimands.html#cross-world-independence-assumption"><i class="fa fa-check"></i><b>2.2.2</b> Cross-world independence assumption</a></li>
+<li class="chapter" data-level="2.2.3" data-path="estimands.html"><a href="estimands.html#identification-formula"><i class="fa fa-check"></i><b>2.2.3</b> Identification formula:</a></li>
+<li class="chapter" data-level="2.2.4" data-path="estimands.html"><a href="estimands.html#is-this-the-estimand-i-want-1"><i class="fa fa-check"></i><b>2.2.4</b> Is this the estimand I want?</a></li>
+<li class="chapter" data-level="2.2.5" data-path="estimands.html"><a href="estimands.html#unidentifiability-of-the-nde-and-nie-in-this-setting"><i class="fa fa-check"></i><b>2.2.5</b> Unidentifiability of the NDE and NIE in this setting</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="estimands.html"><a href="estimands.html#interventional-indirect-effects"><i class="fa fa-check"></i><b>2.3</b> Interventional (in)direct effects</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="estimands.html"><a href="estimands.html#an-alternative-definition-of-the-effects"><i class="fa fa-check"></i><b>2.3.1</b> An alternative definition of the effects:</a></li>
+<li class="chapter" data-level="2.3.2" data-path="estimands.html"><a href="estimands.html#identification-assumptions-2"><i class="fa fa-check"></i><b>2.3.2</b> Identification assumptions:</a></li>
+<li class="chapter" data-level="2.3.3" data-path="estimands.html"><a href="estimands.html#is-this-the-estimand-i-want-2"><i class="fa fa-check"></i><b>2.3.3</b> Is this the estimand I want?</a></li>
+<li class="chapter" data-level="2.3.4" data-path="estimands.html"><a href="estimands.html#but-there-is-an-important-limitation-of-interventional-effects"><i class="fa fa-check"></i><b>2.3.4</b> But, there is an important limitation of interventional effects</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="estimands.html"><a href="estimands.html#estimand-summary"><i class="fa fa-check"></i><b>2.4</b> Estimand Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="estimandirl.html"><a href="estimandirl.html"><i class="fa fa-check"></i><b>3</b> How to choose an estimand: Real-world example</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="estimandirl.html"><a href="estimandirl.html#comparative-effectiveness-of-two-medications-for-opioid-use-disorder-oud"><i class="fa fa-check"></i><b>3.1</b> Comparative effectiveness of two medications for opioid use disorder (OUD)</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="estimandirl.html"><a href="estimandirl.html#getting-specific-about-the-question"><i class="fa fa-check"></i><b>3.1.1</b> Getting specific about the question</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="estimation-preliminaries-review-of-doubly-robust-estimators-for-the-average-treatment-effect.html"><a href="estimation-preliminaries-review-of-doubly-robust-estimators-for-the-average-treatment-effect.html"><i class="fa fa-check"></i><b>4</b> Estimation preliminaries: review of doubly robust estimators for the average treatment effect</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="estimation-preliminaries-review-of-doubly-robust-estimators-for-the-average-treatment-effect.html"><a href="estimation-preliminaries-review-of-doubly-robust-estimators-for-the-average-treatment-effect.html#option-1-g-computation-estimator"><i class="fa fa-check"></i><b>4.1</b> Option 1: G-computation estimator</a></li>
+<li class="chapter" data-level="4.2" data-path="estimation-preliminaries-review-of-doubly-robust-estimators-for-the-average-treatment-effect.html"><a href="estimation-preliminaries-review-of-doubly-robust-estimators-for-the-average-treatment-effect.html#option-2-inverse-probability-weighted-estimator"><i class="fa fa-check"></i><b>4.2</b> Option 2: Inverse probability weighted estimator</a></li>
+<li class="chapter" data-level="4.3" data-path="estimation-preliminaries-review-of-doubly-robust-estimators-for-the-average-treatment-effect.html"><a href="estimation-preliminaries-review-of-doubly-robust-estimators-for-the-average-treatment-effect.html#option-3-augmented-inverse-probability-weighted-estimator"><i class="fa fa-check"></i><b>4.3</b> Option 3: Augmented inverse probability weighted estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><i class="fa fa-check"></i><b>5</b> Construction of G-computation and weighted estimators for the NDE: The case of the natural direct effect</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#recap-of-definition-and-identification-of-the-natural-direct-effect"><i class="fa fa-check"></i><b>5.1</b> Recap of definition and identification of the natural direct effect</a></li>
+<li class="chapter" data-level="5.2" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#from-causal-to-statistical-quantities"><i class="fa fa-check"></i><b>5.2</b> From causal to statistical quantities</a></li>
+<li class="chapter" data-level="5.3" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#computing-identification-formulas-if-you-know-the-true-distribution"><i class="fa fa-check"></i><b>5.3</b> Computing identification formulas if you know the true distribution</a></li>
+<li class="chapter" data-level="5.4" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#plug-in-a.k.a-g-computation-estimator"><i class="fa fa-check"></i><b>5.4</b> Plug-in (a.k.a g-computation) estimator</a></li>
+<li class="chapter" data-level="5.5" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#first-weighted-estimator-akin-to-inverse-probability-weighted"><i class="fa fa-check"></i><b>5.5</b> First weighted estimator (akin to inverse probability weighted)</a></li>
+<li class="chapter" data-level="5.6" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#second-weighted-estimator"><i class="fa fa-check"></i><b>5.6</b> Second weighted estimator</a></li>
+<li class="chapter" data-level="5.7" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#how-can-g-estimation-and-weighted-estimation-be-implemented-in-practice"><i class="fa fa-check"></i><b>5.7</b> How can g-estimation and weighted estimation be implemented in practice?</a></li>
+<li class="chapter" data-level="5.8" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#pros-and-cons-of-g-computation-and-weighting-parametric-models"><i class="fa fa-check"></i><b>5.8</b> Pros and cons of G-computation and weighting parametric models</a></li>
+<li class="chapter" data-level="5.9" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#an-example-of-the-bias-of-a-g-computation-estimator-of-the-natural-direct-effect"><i class="fa fa-check"></i><b>5.9</b> An example of the bias of a g-computation estimator of the natural direct effect</a></li>
+<li class="chapter" data-level="5.10" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#pros-and-cons-of-g-computation-or-weighting-with-data-adaptive-regression"><i class="fa fa-check"></i><b>5.10</b> Pros and cons of G-computation or weighting with data-adaptive regression</a></li>
+<li class="chapter" data-level="5.11" data-path="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html"><a href="construction-of-g-computation-and-weighted-estimators-for-the-nde-the-case-of-the-natural-direct-effect.html#solution-to-these-problems-robust-semiparametric-efficient-estimation"><i class="fa fa-check"></i><b>5.11</b> Solution to these problems: robust semiparametric efficient estimation</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html"><a href="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html"><i class="fa fa-check"></i><b>6</b> Construction of a semiparametric efficient estimator for the NDE (a.k.a. the one-step estimator)</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html"><a href="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html#how-to-compute-the-one-step-estimator-akin-to-augmented-ipw"><i class="fa fa-check"></i><b>6.1</b> How to compute the one-step estimator (akin to Augmented IPW)</a></li>
+<li class="chapter" data-level="6.2" data-path="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html"><a href="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html#performance-of-the-one-step-estimator-in-a-small-simulation-study"><i class="fa fa-check"></i><b>6.2</b> Performance of the one-step estimator in a small simulation study</a></li>
+<li class="chapter" data-level="6.3" data-path="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html"><a href="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html#a-note-about-targeted-minimum-loss-based-estimation-tmle"><i class="fa fa-check"></i><b>6.3</b> A note about targeted minimum loss-based estimation (TMLE)</a></li>
+<li class="chapter" data-level="6.4" data-path="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html"><a href="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html#a-note-about-cross-fitting"><i class="fa fa-check"></i><b>6.4</b> A note about cross-fitting</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="r-packages-for-estimation-of-the-causal-indirect-effects.html"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html"><i class="fa fa-check"></i><b>7</b> <code>R</code> packages for estimation of the causal (in)direct effects</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="r-packages-for-estimation-of-the-causal-indirect-effects.html"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#medoutcon-natural-and-interventional-indirect-effects"><i class="fa fa-check"></i><b>7.1</b> <code>medoutcon</code>: Natural and interventional (in)direct effects</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="r-packages-for-estimation-of-the-causal-indirect-effects.html"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#natural-indirect-effects"><i class="fa fa-check"></i><b>7.1.1</b> Natural (in)direct effects</a></li>
+<li class="chapter" data-level="7.1.2" data-path="r-packages-for-estimation-of-the-causal-indirect-effects.html"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#interlude-sl3-for-nuisance-parameter-estimation"><i class="fa fa-check"></i><b>7.1.2</b> Interlude: <code>sl3</code> for nuisance parameter estimation</a></li>
+<li class="chapter" data-level="7.1.3" data-path="r-packages-for-estimation-of-the-causal-indirect-effects.html"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#efficient-estimation-of-the-natural-indirect-effects"><i class="fa fa-check"></i><b>7.1.3</b> Efficient estimation of the natural (in)direct effects</a></li>
+<li class="chapter" data-level="7.1.4" data-path="r-packages-for-estimation-of-the-causal-indirect-effects.html"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#interventional-indirect-effects-1"><i class="fa fa-check"></i><b>7.1.4</b> Interventional (in)direct effects</a></li>
+<li class="chapter" data-level="7.1.5" data-path="r-packages-for-estimation-of-the-causal-indirect-effects.html"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#efficient-estimation-of-the-interventional-indirect-effects"><i class="fa fa-check"></i><b>7.1.5</b> Efficient estimation of the interventional (in)direct effects</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="appendix-additional-topics-of-interest.html"><a href="appendix-additional-topics-of-interest.html"><i class="fa fa-check"></i><b>8</b> Appendix: Additional topics of interest</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="appendix-additional-topics-of-interest.html"><a href="appendix-additional-topics-of-interest.html#mediation-with-time-varying-treatments-mediators-and-covariates"><i class="fa fa-check"></i><b>8.1</b> Mediation with time-varying treatments, mediators, and covariates</a></li>
+<li class="chapter" data-level="8.2" data-path="appendix-additional-topics-of-interest.html"><a href="appendix-additional-topics-of-interest.html#mediation-with-monotonicity-of-a-z-relationship"><i class="fa fa-check"></i><b>8.2</b> Mediation with monotonicity of A-Z relationship</a></li>
+<li class="chapter" data-level="8.3" data-path="appendix-additional-topics-of-interest.html"><a href="appendix-additional-topics-of-interest.html#mediation-with-instrumental-variables"><i class="fa fa-check"></i><b>8.3</b> Mediation with instrumental variables</a></li>
+<li class="chapter" data-level="8.4" data-path="appendix-additional-topics-of-interest.html"><a href="appendix-additional-topics-of-interest.html#mediation-with-separable-effects"><i class="fa fa-check"></i><b>8.4</b> Mediation with separable effects</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="stochastic.html"><a href="stochastic.html"><i class="fa fa-check"></i><b>9</b> Appendix: Stochastic direct and indirect effects</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="stochastic.html"><a href="stochastic.html#definition-of-the-effects"><i class="fa fa-check"></i><b>9.1</b> Definition of the effects</a></li>
+<li class="chapter" data-level="9.2" data-path="stochastic.html"><a href="stochastic.html#motivation-for-stochastic-interventions"><i class="fa fa-check"></i><b>9.2</b> Motivation for stochastic interventions</a></li>
+<li class="chapter" data-level="9.3" data-path="stochastic.html"><a href="stochastic.html#definition-of-stochastic-effects"><i class="fa fa-check"></i><b>9.3</b> Definition of stochastic effects</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="stochastic.html"><a href="stochastic.html#ipsi"><i class="fa fa-check"></i><b>9.3.1</b> Example: incremental propensity score interventions (IPSI) <span class="citation">(Kennedy, 2018)</span></a></li>
+<li class="chapter" data-level="" data-path="stochastic.html"><a href="stochastic.html#example-modified-treatment-policies-mtp-diaz2020causal"><i class="fa fa-check"></i>Example: modified treatment policies (MTP) <span class="citation">(Dı́az and Hejazi, 2020)</span></a></li>
+<li class="chapter" data-level="9.3.2" data-path="stochastic.html"><a href="stochastic.html#mediation-analysis-for-stochastic-interventions"><i class="fa fa-check"></i><b>9.3.2</b> Mediation analysis for stochastic interventions</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="stochastic.html"><a href="stochastic.html#identification-assumptions-3"><i class="fa fa-check"></i><b>9.4</b> Identification assumptions</a></li>
+<li class="chapter" data-level="9.5" data-path="stochastic.html"><a href="stochastic.html#what-are-the-odds-of-exposure-under-intervention-vs-real-world"><i class="fa fa-check"></i><b>9.5</b> What are the odds of exposure under intervention vs real world?</a></li>
+<li class="chapter" data-level="9.6" data-path="stochastic.html"><a href="stochastic.html#summary"><i class="fa fa-check"></i><b>9.6</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Modern Causal Mediation Analysis</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="r-packages-for-estimation-of-the-causal-indirect-effects" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">Chapter 7</span> <code>R</code> packages for estimation of the causal (in)direct effects<a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#r-packages-for-estimation-of-the-causal-indirect-effects" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>We’ll now turn to working through a few examples of estimating the natural,
+interventional, and stochastic direct and indirect effects. As our running
+example, we’ll a simple data set from an observational study of the relationship
+between BMI and kids’ behavior, freely distributed with the <a href="https://CRAN.R-project.org/package=mma"><code>mma</code> <code>R</code> package
+on CRAN</a>. First, let’s load the packages
+we’ll be using and set a seed; then, load this data set and take a quick look</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb35-2"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sl3)</span>
+<span id="cb35-3"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(medoutcon)</span>
+<span id="cb35-4"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(medshift)</span>
+<span id="cb35-5"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mma)</span>
+<span id="cb35-6"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">429153</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load and examine data</span></span>
+<span id="cb36-2"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(weight_behavior)</span>
+<span id="cb36-3"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(weight_behavior)</span>
+<span id="cb36-4"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 691  15</span></span>
+<span id="cb36-5"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># drop missing values</span></span>
+<span id="cb36-7"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-7" aria-hidden="true" tabindex="-1"></a>weight_behavior <span class="ot">&lt;-</span> weight_behavior <span class="sc">%&gt;%</span></span>
+<span id="cb36-8"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb36-9"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>()</span>
+<span id="cb36-10"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-10" aria-hidden="true" tabindex="-1"></a>weight_behavior</span>
+<span id="cb36-11"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 567 × 15</span></span>
+<span id="cb36-12"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     bmi   age sex   race  numpeople   car gotosch snack tvhours cmpthours</span></span>
+<span id="cb36-13"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;     &lt;int&gt; &lt;int&gt; &lt;fct&gt;   &lt;fct&gt;   &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb36-14"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  18.2  12.2 F     OTHER         5     3 2       1           4         0</span></span>
+<span id="cb36-15"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  22.8  12.8 M     OTHER         4     3 2       1           4         2</span></span>
+<span id="cb36-16"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  25.6  12.1 M     OTHER         2     3 2       1           0         2</span></span>
+<span id="cb36-17"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  15.1  12.3 M     OTHER         4     1 2       1           2         1</span></span>
+<span id="cb36-18"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5  23.0  11.8 M     OTHER         4     1 1       1           4         3</span></span>
+<span id="cb36-19"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 562 more rows, and 5 more variables: cellhours &lt;dbl&gt;, sports &lt;fct&gt;,</span></span>
+<span id="cb36-20"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb36-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   exercises &lt;int&gt;, sweat &lt;int&gt;, overweigh &lt;dbl&gt;</span></span></code></pre></div>
+<p>The documentation for the data set describes it as a “database obtained from the
+Louisiana State University Health Sciences Center, New Orleans, by Dr. Richard
+Scribner. He explored the relationship between BMI and kids’ behavior through a
+survey at children, teachers and parents in Grenada in 2014. This data set
+includes 691 observations and 15 variables.” Note that the data set contained
+several observations with missing values, which we removed above to simplify the
+demonstration of our analytic methods. In practice, we recommend instead using
+appropriate corrections (e.g., imputation, inverse weighting) to fully take
+advantage of the observed data.</p>
+<p>Following the motivation of the original study, we focus on the causal effects
+of participating in a sports team (<code>sports</code>) on the BMI of children (<code>bmi</code>),
+taking into consideration several mediators (<code>snack</code>, <code>exercises</code>, <code>overweigh</code>);
+all other measured covariates are taken to be potential baseline confounders.</p>
+<div id="medoutcon-natural-and-interventional-indirect-effects" class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> <code>medoutcon</code>: Natural and interventional (in)direct effects<a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#medoutcon-natural-and-interventional-indirect-effects" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The data on a single observational unit can be represented <span class="math inline">\(O = (W, A, M, Y)\)</span>,
+with the data pooled across all participants denoted <span class="math inline">\(O_1, \ldots, O_n\)</span>, for a
+of <span class="math inline">\(n\)</span> i.i.d. observations of <span class="math inline">\(O\)</span>. Recall the DAG <a href="estimands.html#estimands">from an earlier
+chapter</a>, which represents the data-generating process:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-1"></span>
+<img src="06-estimation-code-walkthrough_files/figure-html/unnamed-chunk-1-1.png" alt="Directed acyclic graph under *no intermediate confounders* of the mediator-outcome relation affected by treatment" width="80%" />
+<p class="caption">
+FIGURE 2.1: Directed acyclic graph under <em>no intermediate confounders</em> of the mediator-outcome relation affected by treatment
+</p>
+</div>
+<div id="natural-indirect-effects" class="section level3 hasAnchor" number="7.1.1">
+<h3><span class="header-section-number">7.1.1</span> Natural (in)direct effects<a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#natural-indirect-effects" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>To start, we will consider estimation of the <em>natural</em> direct and indirect effects,
+which, we recall, are defined as follows
+<span class="math display">\[\begin{equation*}
+  \E[Y_{1,M_1} - Y_{0,M_0}] = \underbrace{\E[Y_{\color{red}{1},\color{blue}{M_1}} -
+    Y_{\color{red}{1},\color{blue}{M_0}}]}_{\text{natural indirect effect}} +
+    \underbrace{\E[Y_{\color{blue}{1},\color{red}{M_0}} -
+    Y_{\color{blue}{0},\color{red}{M_0}}]}_{\text{natural direct effect}}.
+\end{equation*}\]</span></p>
+<ul>
+<li>Our <a href="https://github.com/nhejazi/medoutcon"><code>medoutcon</code> <code>R</code> package</a>
+<span class="citation">(<a href="#ref-hejazi2022medoutcon-rpkg" role="doc-biblioref">Hejazi, Dı́az and Rudolph, 2022a</a>; <a href="#ref-hejazi2022medoutcon-joss" role="doc-biblioref">Hejazi, Rudolph and Dı́az, 2022b</a>)</span>, which accompanies
+<span class="citation">Dı́az et al. (<a href="#ref-diaz2020nonparametric" role="doc-biblioref">2020</a>)</span>, implements one-step and TML estimators of both the
+natural and interventional (in)direct effects.</li>
+<li>Both types of estimators are capable of accommodating flexible modeling
+strategies (e.g., ensemble machine learning) for the initial estimation of
+nuisance parameters.</li>
+<li>The <code>medoutcon</code> <code>R</code> package uses cross-validation in initial estimation: this
+results in cross-validated (or “cross-fitted”) one-step and TML estimators
+<span class="citation">(<a href="#ref-klaassen1987consistent" role="doc-biblioref">Klaassen, 1987</a>; <a href="#ref-zheng2011cross" role="doc-biblioref">Zheng and van der Laan, 2011</a>; <a href="#ref-chernozhukov2018double" role="doc-biblioref">Chernozhukov et al., 2018</a>)</span>, which
+exhibit greater robustness than their non-sample-splitting analogs.</li>
+<li>To this end, <code>medoutcon</code> integrates with the <code>sl3</code> <code>R</code> package <span class="citation">(<a href="#ref-coyle2022sl3" role="doc-biblioref">Coyle et al., 2022</a>)</span>,
+which is extensively documented in this <a href="https://tlverse.org/tlverse-handbook/sl3">book
+chapter</a> <span class="citation">(<a href="#ref-phillips2022super" role="doc-biblioref">Phillips, 2022</a>; <a href="#ref-vdl2022targeted" role="doc-biblioref">van der Laan et al., 2022</a>)</span>.</li>
+</ul>
+</div>
+<div id="interlude-sl3-for-nuisance-parameter-estimation" class="section level3 hasAnchor" number="7.1.2">
+<h3><span class="header-section-number">7.1.2</span> Interlude: <code>sl3</code> for nuisance parameter estimation<a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#interlude-sl3-for-nuisance-parameter-estimation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>To fully take advantage of the one-step and TML estimators, we’d like to rely
+on flexible, data adaptive strategies for nuisance parameter estimation.</li>
+<li>Doing so minimizes opportunities for model misspecification to compromise our
+analytic conclusions.</li>
+<li>Choosing among the diversity of available machine learning algorithms can be
+challenging, so we recommend using the Super Learner algorithm for ensemble
+machine learning <span class="citation">(<a href="#ref-vdl2007super" role="doc-biblioref">van der Laan et al., 2007</a>)</span>, which is implemented in the <a href="https://github.com/tlverse/sl3"><code>sl3</code> R
+package</a> <span class="citation">(<a href="#ref-coyle2022sl3" role="doc-biblioref">Coyle et al., 2022</a>)</span>.</li>
+<li>Below, we demonstrate the construction of an ensemble learner based on a
+limited library of algorithms, including n intercept model, a main terms GLM,
+Lasso (<span class="math inline">\(\ell_1\)</span>-penalized) regression, and random forest (<code>ranger</code>).</li>
+</ul>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># instantiate learners</span></span>
+<span id="cb37-2"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb37-2" aria-hidden="true" tabindex="-1"></a>mean_lrnr <span class="ot">&lt;-</span> Lrnr_mean<span class="sc">$</span><span class="fu">new</span>()</span>
+<span id="cb37-3"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb37-3" aria-hidden="true" tabindex="-1"></a>fglm_lrnr <span class="ot">&lt;-</span> Lrnr_glm_fast<span class="sc">$</span><span class="fu">new</span>()</span>
+<span id="cb37-4"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb37-4" aria-hidden="true" tabindex="-1"></a>lasso_lrnr <span class="ot">&lt;-</span> Lrnr_glmnet<span class="sc">$</span><span class="fu">new</span>(<span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">nfolds =</span> <span class="dv">3</span>)</span>
+<span id="cb37-5"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb37-5" aria-hidden="true" tabindex="-1"></a>rf_lrnr <span class="ot">&lt;-</span> Lrnr_ranger<span class="sc">$</span><span class="fu">new</span>(<span class="at">num.trees =</span> <span class="dv">200</span>)</span>
+<span id="cb37-6"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="co"># create learner library and instantiate super learner ensemble</span></span>
+<span id="cb37-8"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb37-8" aria-hidden="true" tabindex="-1"></a>lrnr_lib <span class="ot">&lt;-</span> Stack<span class="sc">$</span><span class="fu">new</span>(mean_lrnr, fglm_lrnr, lasso_lrnr, rf_lrnr)</span>
+<span id="cb37-9"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb37-9" aria-hidden="true" tabindex="-1"></a>sl_lrnr <span class="ot">&lt;-</span> Lrnr_sl<span class="sc">$</span><span class="fu">new</span>(<span class="at">learners =</span> lrnr_lib, <span class="at">metalearner =</span> Lrnr_nnls<span class="sc">$</span><span class="fu">new</span>())</span></code></pre></div>
+<ul>
+<li>Of course, there are many alternatives for learning algorithms to be included
+in such a modeling library. Feel free to explore!</li>
+</ul>
+</div>
+<div id="efficient-estimation-of-the-natural-indirect-effects" class="section level3 hasAnchor" number="7.1.3">
+<h3><span class="header-section-number">7.1.3</span> Efficient estimation of the natural (in)direct effects<a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#efficient-estimation-of-the-natural-indirect-effects" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>Estimation of the natural direct and indirect effects requires estimation of a
+few nuisance parameters. Recall that these are
+<ul>
+<li><span class="math inline">\(g(a\mid w)\)</span>, which denotes <span class="math inline">\(\P(A=a \mid W=w)\)</span></li>
+<li><span class="math inline">\(h(a\mid m, w)\)</span>, which denotes <span class="math inline">\(\P(A=a \mid M=m, W=w)\)</span></li>
+<li><span class="math inline">\(b(a, m, w)\)</span>, which denotes <span class="math inline">\(\E(Y \mid A=a, M=m, W=w)\)</span></li>
+</ul></li>
+<li>While we recommend the use of Super Learning, we opt to instead estimate all
+nuisance parameters with Lasso regression below (to save computational time).</li>
+<li>Now, let’s use the <code>medoutcon()</code> function to estimate the <em>natural direct
+effect</em>:</li>
+</ul>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute one-step estimate of the natural direct effect</span></span>
+<span id="cb38-2"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-2" aria-hidden="true" tabindex="-1"></a>nde_onestep <span class="ot">&lt;-</span> <span class="fu">medoutcon</span>(</span>
+<span id="cb38-3"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">W =</span> weight_behavior[, <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;race&quot;</span>, <span class="st">&quot;tvhours&quot;</span>)],</span>
+<span id="cb38-4"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">A =</span> (<span class="fu">as.numeric</span>(weight_behavior<span class="sc">$</span>sports) <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb38-5"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Z =</span> <span class="cn">NULL</span>,</span>
+<span id="cb38-6"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">M =</span> weight_behavior[, <span class="fu">c</span>(<span class="st">&quot;snack&quot;</span>, <span class="st">&quot;exercises&quot;</span>, <span class="st">&quot;overweigh&quot;</span>)],</span>
+<span id="cb38-7"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> weight_behavior<span class="sc">$</span>bmi,</span>
+<span id="cb38-8"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">g_learners =</span> lasso_lrnr,</span>
+<span id="cb38-9"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">h_learners =</span> lasso_lrnr,</span>
+<span id="cb38-10"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_learners =</span> lasso_lrnr,</span>
+<span id="cb38-11"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">&quot;direct&quot;</span>,</span>
+<span id="cb38-12"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="st">&quot;onestep&quot;</span>,</span>
+<span id="cb38-13"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimator_args =</span> <span class="fu">list</span>(<span class="at">cv_folds =</span> <span class="dv">5</span>)</span>
+<span id="cb38-14"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-15"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(nde_onestep)</span>
+<span id="cb38-16"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
+<span id="cb38-17"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lwr_ci param_est upr_ci var_est  eif_mean estimator param         </span></span>
+<span id="cb38-18"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;         </span></span>
+<span id="cb38-19"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb38-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 -0.600   -0.0880  0.424  0.0683 -5.25e-16 onestep   direct_natural</span></span></code></pre></div>
+<ul>
+<li>We can similarly call <code>medoutcon()</code> to estimate the <em>natural indirect effect</em>:</li>
+</ul>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute one-step estimate of the natural indirect effect</span></span>
+<span id="cb39-2"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-2" aria-hidden="true" tabindex="-1"></a>nie_onestep <span class="ot">&lt;-</span> <span class="fu">medoutcon</span>(</span>
+<span id="cb39-3"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">W =</span> weight_behavior[, <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;race&quot;</span>, <span class="st">&quot;tvhours&quot;</span>)],</span>
+<span id="cb39-4"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">A =</span> (<span class="fu">as.numeric</span>(weight_behavior<span class="sc">$</span>sports) <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb39-5"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Z =</span> <span class="cn">NULL</span>,</span>
+<span id="cb39-6"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">M =</span> weight_behavior[, <span class="fu">c</span>(<span class="st">&quot;snack&quot;</span>, <span class="st">&quot;exercises&quot;</span>, <span class="st">&quot;overweigh&quot;</span>)],</span>
+<span id="cb39-7"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> weight_behavior<span class="sc">$</span>bmi,</span>
+<span id="cb39-8"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">g_learners =</span> lasso_lrnr,</span>
+<span id="cb39-9"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">h_learners =</span> lasso_lrnr,</span>
+<span id="cb39-10"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_learners =</span> lasso_lrnr,</span>
+<span id="cb39-11"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">&quot;indirect&quot;</span>,</span>
+<span id="cb39-12"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="st">&quot;onestep&quot;</span>,</span>
+<span id="cb39-13"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimator_args =</span> <span class="fu">list</span>(<span class="at">cv_folds =</span> <span class="dv">5</span>)</span>
+<span id="cb39-14"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-15"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(nie_onestep)</span>
+<span id="cb39-16"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
+<span id="cb39-17"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lwr_ci param_est upr_ci var_est eif_mean estimator param           </span></span>
+<span id="cb39-18"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;           </span></span>
+<span id="cb39-19"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb39-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  0.477      1.04   1.61  0.0838 3.48e-16 onestep   indirect_natural</span></span></code></pre></div>
+<ul>
+<li>From the above, we can conclude that the effect of participation on a sports
+team on BMI is primarily mediated by the variables <code>snack</code>, <code>exercises</code>, and
+<code>overweigh</code>, as the natural indirect effect is several times larger than the
+natural direct effect.</li>
+<li>Note that we could have instead used the TML estimators, which have improved
+finite-sample performance, instead of the one-step estimators. Doing this is
+as simple as setting the <code>estimator = "tmle"</code> in the relevant argument.</li>
+</ul>
+</div>
+<div id="interventional-indirect-effects-1" class="section level3 hasAnchor" number="7.1.4">
+<h3><span class="header-section-number">7.1.4</span> Interventional (in)direct effects<a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#interventional-indirect-effects-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Since our knowledge of the system under study is incomplete, we might worry that
+one (or more) of the measured variables are not mediators, but, in fact,
+intermediate confounders affected by treatment. While the natural (in)direct
+effects are not identified in this setting, their interventional (in)direct
+counterparts are, as we saw in an earlier section. Recall that both types of
+effects are defined by static interventions on the treatment. The interventional
+effects are distinguished by their use of a stochastic intervention on the
+mediator to aid in their identification.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-2"></span>
+<img src="06-estimation-code-walkthrough_files/figure-html/unnamed-chunk-2-1.png" alt="Directed acyclic graph under intermediate confounders of the mediator-outcome relation affected by treatment" width="80%" />
+<p class="caption">
+FIGURE 7.1: Directed acyclic graph under intermediate confounders of the mediator-outcome relation affected by treatment
+</p>
+</div>
+<p>Recall that the interventional (in)direct effects are defined via the decomposition:
+<span class="math display">\[\begin{equation*}
+\E[Y_{1,G_1} - Y_{0,G_0}] = \underbrace{\E[Y_{\color{red}{1},\color{blue}{G_1}} -
+    Y_{\color{red}{1},\color{blue}{G_0}}]}_{\text{interventional indirect effect}} +
+    \underbrace{\E[Y_{\color{blue}{1},\color{red}{G_0}} -
+    Y_{\color{blue}{0},\color{red}{G_0}}]}_{\text{interventional direct effect}}
+\end{equation*}\]</span></p>
+<ul>
+<li>In our data example, we’ll consider the eating of snacks as a potential
+intermediate confounder, since one might reasonably hypothesize that
+participation on a sports team might subsequently affect snacking, which then
+could affect mediators like the amount of exercises and overweight status.</li>
+<li>The interventional direct and indirect effects may also be easily estimated
+with the <a href="https://github.com/nhejazi/medoutcon"><code>medoutcon</code> <code>R</code> package</a>
+<span class="citation">(<a href="#ref-hejazi2022medoutcon-rpkg" role="doc-biblioref">Hejazi et al., 2022a</a>; b)</span>.</li>
+<li>Just as for the natural (in)direct effects, <code>medoutcon</code> implements
+cross-validated one-step and TML estimators of the interventional effects.</li>
+</ul>
+</div>
+<div id="efficient-estimation-of-the-interventional-indirect-effects" class="section level3 hasAnchor" number="7.1.5">
+<h3><span class="header-section-number">7.1.5</span> Efficient estimation of the interventional (in)direct effects<a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#efficient-estimation-of-the-interventional-indirect-effects" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>Estimation of these effects is more complex, so a few additional nuisance
+parameters arise when expressing the (more general) EIF for these effects:
+<ul>
+<li><span class="math inline">\(q(z \mid a, w)\)</span>, the conditional density of the intermediate confounders,
+conditional only on treatment and baseline covariates;</li>
+<li><span class="math inline">\(r(z \mid a, m, w)\)</span>, the conditional density of the intermediate
+confounders, conditional on mediators, treatment, and baseline covariates.</li>
+</ul></li>
+<li>To estimate the interventional effects, we only need to set the argument <code>Z</code>
+of <code>medoutcon</code> to a value other than <code>NULL</code>.</li>
+<li>Note that the implementation in <code>medoutcon</code> is currently limited to settings
+with only binary intermediate confounders, i.e., <span class="math inline">\(Z \in \{0, 1\}\)</span>.</li>
+<li>Let’s use <code>medoutcon()</code> to estimate the <em>interventional direct effect</em>:</li>
+</ul>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute one-step estimate of the interventional direct effect</span></span>
+<span id="cb40-2"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-2" aria-hidden="true" tabindex="-1"></a>interv_de_onestep <span class="ot">&lt;-</span> <span class="fu">medoutcon</span>(</span>
+<span id="cb40-3"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">W =</span> weight_behavior[, <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;race&quot;</span>, <span class="st">&quot;tvhours&quot;</span>)],</span>
+<span id="cb40-4"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">A =</span> (<span class="fu">as.numeric</span>(weight_behavior<span class="sc">$</span>sports) <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb40-5"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Z =</span> (<span class="fu">as.numeric</span>(weight_behavior<span class="sc">$</span>snack) <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb40-6"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">M =</span> weight_behavior[, <span class="fu">c</span>(<span class="st">&quot;exercises&quot;</span>, <span class="st">&quot;overweigh&quot;</span>)],</span>
+<span id="cb40-7"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> weight_behavior<span class="sc">$</span>bmi,</span>
+<span id="cb40-8"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">g_learners =</span> lasso_lrnr,</span>
+<span id="cb40-9"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">h_learners =</span> lasso_lrnr,</span>
+<span id="cb40-10"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_learners =</span> lasso_lrnr,</span>
+<span id="cb40-11"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">&quot;direct&quot;</span>,</span>
+<span id="cb40-12"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="st">&quot;onestep&quot;</span>,</span>
+<span id="cb40-13"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimator_args =</span> <span class="fu">list</span>(<span class="at">cv_folds =</span> <span class="dv">5</span>)</span>
+<span id="cb40-14"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-15"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(interv_de_onestep)</span>
+<span id="cb40-16"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
+<span id="cb40-17"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lwr_ci param_est upr_ci var_est  eif_mean estimator param                </span></span>
+<span id="cb40-18"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                </span></span>
+<span id="cb40-19"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 -0.309     0.239  0.788  0.0782 -1.09e-15 onestep   direct_interventional</span></span></code></pre></div>
+<ul>
+<li>We can similarly estimate the <em>interventional indirect effect</em>:</li>
+</ul>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute one-step estimate of the interventional indirect effect</span></span>
+<span id="cb41-2"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-2" aria-hidden="true" tabindex="-1"></a>interv_ie_onestep <span class="ot">&lt;-</span> <span class="fu">medoutcon</span>(</span>
+<span id="cb41-3"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">W =</span> weight_behavior[, <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;race&quot;</span>, <span class="st">&quot;tvhours&quot;</span>)],</span>
+<span id="cb41-4"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">A =</span> (<span class="fu">as.numeric</span>(weight_behavior<span class="sc">$</span>sports) <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb41-5"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Z =</span> (<span class="fu">as.numeric</span>(weight_behavior<span class="sc">$</span>snack) <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb41-6"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">M =</span> weight_behavior[, <span class="fu">c</span>(<span class="st">&quot;exercises&quot;</span>, <span class="st">&quot;overweigh&quot;</span>)],</span>
+<span id="cb41-7"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> weight_behavior<span class="sc">$</span>bmi,</span>
+<span id="cb41-8"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">g_learners =</span> lasso_lrnr,</span>
+<span id="cb41-9"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">h_learners =</span> lasso_lrnr,</span>
+<span id="cb41-10"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_learners =</span> lasso_lrnr,</span>
+<span id="cb41-11"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">&quot;indirect&quot;</span>,</span>
+<span id="cb41-12"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="st">&quot;onestep&quot;</span>,</span>
+<span id="cb41-13"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimator_args =</span> <span class="fu">list</span>(<span class="at">cv_folds =</span> <span class="dv">5</span>)</span>
+<span id="cb41-14"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-15"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(interv_ie_onestep)</span>
+<span id="cb41-16"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
+<span id="cb41-17"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lwr_ci param_est upr_ci var_est  eif_mean estimator param                  </span></span>
+<span id="cb41-18"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                  </span></span>
+<span id="cb41-19"><a href="r-packages-for-estimation-of-the-causal-indirect-effects.html#cb41-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  0.524      1.06   1.60  0.0758 -1.66e-15 onestep   indirect_interventional</span></span></code></pre></div>
+<ul>
+<li>From the above, we can conclude that the effect of participation on a sports
+team on BMI is largely through the interventional indirect effect (i.e.,
+through the pathways involving the mediating variables) rather than via its
+direct effect.</li>
+<li>Just as before, we could have instead used the TML estimators, instead of the
+one-step estimators. Doing this is as simple as setting the
+<code>estimator = "tmle"</code> in the relevant argument.</li>
+</ul>
+<!--
+## `medshift`: Stochastic (in)direct effects
+
+While the analyses using the natural and interventional effects have been
+illuminating, we may also go beyond the restrictive static interventions
+required to define these (in)direct effects. In fact, it may be more realistic
+to consider interventions that do not directly force children to join athletic
+teams, but instead motivate them to make their participation on such teams more
+likely. Importantly, such interventions are often far more realistic and
+actionable in real-world studies.
+
+### Formulating the stochastic (in)direct effects
+
+* These more flexible intervention regimes are incompatible with (in)direct
+  effect definitions based on decomposing the average treatment effect.
+* Instead, consider the decomposition of the population intervention effect
+  (PIE) of a _stochastic intervention_ into direct and indirect effects
+  [@diaz2020causal]:
+\begin{align*}
+  \E[Y&_{A_\delta,M_{A_\delta}} - Y_{A,M_A}] = \\
+  &\underbrace{\E[Y_{\color{red}{A_\delta},\color{blue}{M_{A_\delta}}} -
+    Y_{\color{red}{A_\delta},
+    \color{blue}{M}}]}_{\text{stochastic natural indirect effect}} +
+    \underbrace{\E[Y_{\color{blue}{A_\delta},\color{red}{M}} -
+    Y_{\color{blue}{A},
+    \color{red}{M}}]}_{\text{stochastic natural direct effect}}
+\end{align*}
+* Recall from our discussion of the [incremental propensity score
+  interventions](#ipsi) [@kennedy2018nonparametric] that such stochastic
+  interventions can compare the pre- and post-intervention odds of exposure:
+\begin{equation*}
+  \delta = \frac{\text{odds}(A_\delta = 1\mid W=w)}
+  {\text{odds}(A = 1\mid W=w)}.
+\end{equation*}
+* In our analysis, we will modulate the _odds of participating in a sports
+  team_ by a fixed amount for each individual, setting, for example,
+  $\delta = 2$:
+
+```r
+delta_shift_ipsi <- 2
+```
+* Such an intervention may be interpreted as the effect of a school program
+  that motivates children to participate in sports teams.
+
+### Efficient estimation of the stochastic (in)direct effects
+
+* The decomposition of the PIE into the direct and indirect effects leads to a
+  common term $\E[Y_{\color{red}{A_\delta},\color{blue}{M}}]$ involved in both
+  the direct and indirect effect definitions. This term may be estimated via
+  the [`medshift` `R` package](https://github.com/nhejazi/medshift)
+  [@hejazi2020medshift].
+* For the direct effect, the remaining term is the
+  $\E[Y_{\color{blue}{A},\color{red}{M}}]$, which may be estimated by a simple
+  mean in the observed data (i.e., no intervention).
+* For the indirect effect, the remaining term is the joint effect of stochastic
+  interventions on both $A$ and $M$:
+  $\E[Y_{\color{red}{A_\delta},\color{blue}{M_{A_\delta}}}$.
+  * For the case of an IPSI on binary $A$, this may be estimated by the tools
+    in the [`npcausal` `R` package](https://github.com/ehkennedy/npcausal).
+  * For the case of an MTP on continuous $A$, this may be estimated by the
+    tools in the [`txshift` `R` package](https://github.com/nhejazi/txshift)
+    [@hejazi2020txshift-rpkg; @hejazi2020txshift-joss].
+* Like the implementation in `medoutcon`, the `medshift` package makes use of
+  cross-validation in constructing initial estimates of nuisance parameters,
+  resulting in more robust, cross-validated efficient estimators
+  [@klaassen1987consistent; @zheng2011cross; @chernozhukov2018double].
+* Now, we're ready to use the `medshift` function to estimate the decomposition
+  term common to both the _stochastic direct and indirect effects_:
+
+```r
+# compute one-step estimate of the decomposition term of the (in)direct effects
+stoch_decomp_onestep <- medshift(
+  W = weight_behavior[, c("age", "sex", "race", "tvhours")],
+  A = (as.numeric(weight_behavior$sports) - 1),
+  Z = weight_behavior[, c("snack", "exercises", "overweigh")],
+  Y = weight_behavior$bmi,
+  delta = delta_shift_ipsi,
+  g_learners = lasso_lrnr,
+  e_learners = lasso_lrnr,
+  m_learners = lasso_lrnr,
+  estimator = "onestep",
+  estimator_args = list(cv_folds = 5)
+)
+summary(stoch_decomp_onestep)
+#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+#>   18.763158   19.099417   19.435676    0.029434 -3.5984e-16     onestep
+```
+
+* To estimate the stochastic direct effect, an extra step is necessary -- we
+  must apply the delta method:
+
+```r
+# convenience function to compute inference via delta method: EY1 - EY0
+linear_contrast <- function(params, eifs, ci_level = 0.95) {
+  # bounds for confidence interval
+  ci_norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - ci_level) / 2))
+  param_est <- params[[1]] - params[[2]]
+  eif <- eifs[[1]] - eifs[[2]]
+  se_eif <- sqrt(var(eif) / length(eif))
+  param_ci <- param_est + ci_norm_bounds * se_eif
+  # parameter and inference
+  out <- c(param_ci[1], param_est, param_ci[2])
+  names(out) <- c("lwr_ci", "param_est", "upr_ci")
+  return(out)
+}
+```
+* Straightforward application of this procedure yields,
+
+```r
+# parameter estimates and EIFs for components of direct effect
+EY <- mean(weight_behavior$bmi)
+eif_EY <- weight_behavior$bmi - EY
+params_de <- list(stoch_decomp_onestep$theta, EY)
+eifs_de <- list(stoch_decomp_onestep$eif, eif_EY)
+
+# direct effect = EY - estimated quantity
+de_est <- linear_contrast(params_de, eifs_de)
+de_est
+#>    lwr_ci param_est    upr_ci 
+#> -0.494596 -0.027691  0.439215
+```
+* From the above, we can conclude that the effect of increasing the odds of
+  participation on a sports team on BMI leads only to a relatively small direct
+  effect.
+-->
+
+</div>
+</div>
+</div>
+<h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-chernozhukov2018double" class="csl-entry">
+Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., et al. (2018) <a href="https://doi.org/10.1111/ectj.12097">Double/debiased machine learning for treatment and structural parameters</a>. <em>The Econometrics Journal</em>, <strong>21</strong>.
+</div>
+<div id="ref-coyle2022sl3" class="csl-entry">
+Coyle, J.R., Hejazi, N.S., Malenica, I., Phillips, R.V. and Sofrygin, O. (2022) <em><a href="https://doi.org/10.5281/zenodo.1342293"><span class="nocase">sl3</span>: Modern Pipelines for Machine Learning and <span>Super Learning</span></a></em>. <a href="https://github.com/tlverse/sl3" class="uri">https://github.com/tlverse/sl3</a>.
+</div>
+<div id="ref-diaz2020nonparametric" class="csl-entry">
+Dı́az, I., Hejazi, N.S., Rudolph, K.E. and van der Laan, M.J. (2020) <a href="https://doi.org/10.1093/biomet/asaa085">Non-parametric efficient causal mediation with intermediate confounders</a>. <em>Biometrika</em>.
+</div>
+<div id="ref-hejazi2022medoutcon-rpkg" class="csl-entry">
+Hejazi, N.S., Dı́az, I. and Rudolph, K.E. (2022a) <em><a href="https://doi.org/10.5281/zenodo.5809519"><span class="nocase">medoutcon</span>: Efficient Natural and Interventional Causal Mediation Analysis</a></em>.
+</div>
+<div id="ref-hejazi2022medoutcon-joss" class="csl-entry">
+Hejazi, N.S., Rudolph, K.E. and Dı́az, I. (2022b) <a href="https://doi.org/10.21105/joss.03979"><span class="nocase">medoutcon</span>: Nonparametric efficient causal mediation analysis with machine learning in <span>R</span></a>. <em>Journal of Open Source Software</em>.
+</div>
+<div id="ref-klaassen1987consistent" class="csl-entry">
+Klaassen, C.A. (1987) Consistent estimation of the influence function of locally asymptotically linear estimators. <em>The Annals of Statistics</em>, 1548–1562.
+</div>
+<div id="ref-phillips2022super" class="csl-entry">
+Phillips, R.V. (2022) <a href="https://tlverse.org/tlverse-handbook/sl3.html">Super (machine) learning</a>. <em><span class="nocase">Targeted Learning in <code>R</code>: Causal Data Science with the <code>tlverse</code> Software Ecosystem</span></em> p. Springer.
+</div>
+<div id="ref-vdl2022targeted" class="csl-entry">
+van der Laan, M.J., Coyle, J.R., Hejazi, N.S., Malenica, I., Phillips, R.V. and Hubbard, A.E. (2022) <em><a href=""><span class="nocase">Targeted Learning in <code>R</code>: Causal Data Science with the <code>tlverse</code> Software Ecosystem</span></a></em>. CRC Press.
+</div>
+<div id="ref-vdl2007super" class="csl-entry">
+van der Laan, M.J., Polley, E.C. and Hubbard, A.E. (2007) <span>Super Learner</span>. <em>Statistical Applications in Genetics and Molecular Biology</em>, <strong>6</strong>.
+</div>
+<div id="ref-zheng2011cross" class="csl-entry">
+Zheng, W. and van der Laan, M.J. (2011) Cross-validated targeted minimum-loss-based estimation. <em>Targeted learning</em> pp. 459–474. Springer.
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="construction-of-a-semiparametric-efficient-estimator-for-the-nde-a.k.a.-the-one-step-estimator.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="appendix-additional-topics-of-interest.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": false,
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/nhejazi/causal_mediation_workshops/edit/master/06-estimation-code-walkthrough.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
