@@ -74,7 +74,7 @@ estimator:
 
 \begin{equation*}
 \underbrace{\frac{1}{n} \sum_{i=1}^n \frac{A_i}{\hat{\P}(A_i=1 \mid W_i)}
-Y_i}_{\text{IPW estimator}} +
+Y_i}_{\text{IPW estimator}} -
 \underbrace{\frac{1}{n} \sum_{i=1}^n \frac{\hat{\E}(Y \mid A_i=1, W_i)}
   {\hat{\P}(A_i=1 \mid W_i)}[A_i - \hat{\P}(A_i=1 \mid
   W_i)]}_{\text{Correction term}}
@@ -90,6 +90,7 @@ or
 \end{equation*}
 
 This estimator has some desirable properties:
+
 - It is robust to misspecification of at most one of the models (outcome or
   treatment) (Q: can you see why?)
 - It is distributed as a normal random variable as sample size grows. This
