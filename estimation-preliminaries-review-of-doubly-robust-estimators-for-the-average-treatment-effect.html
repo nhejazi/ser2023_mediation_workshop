@@ -1220,7 +1220,7 @@ improved properties.</p>
 estimator:</p>
 <p><span class="math display">\[\begin{equation*}
 \underbrace{\frac{1}{n} \sum_{i=1}^n \frac{A_i}{\hat{\P}(A_i=1 \mid W_i)}
-Y_i}_{\text{IPW estimator}} +
+Y_i}_{\text{IPW estimator}} -
 \underbrace{\frac{1}{n} \sum_{i=1}^n \frac{\hat{\E}(Y \mid A_i=1, W_i)}
   {\hat{\P}(A_i=1 \mid W_i)}[A_i - \hat{\P}(A_i=1 \mid
   W_i)]}_{\text{Correction term}}
@@ -1232,13 +1232,15 @@ Y_i}_{\text{IPW estimator}} +
 \underbrace{\frac{1}{n} \sum_{i=1}^n \frac{A_i}{\hat{\P}(A_i=1\mid W_i)}
   [Y_i - \hat{\E}(Y \mid A_i=1, W_i)]}_{\text{Correction term}}
 \end{equation*}\]</span></p>
-<p>This estimator has some desirable properties:
-- It is robust to misspecification of at most one of the models (outcome or
-treatment) (Q: can you see why?)
-- It is distributed as a normal random variable as sample size grows. This
-allows us to easily compute confidence intervals and do hypothesis tests
-- It allows us to use machine learning to estimate the treatment and outcome
-regressions to alleviate model misspecification bias</p>
+<p>This estimator has some desirable properties:</p>
+<ul>
+<li>It is robust to misspecification of at most one of the models (outcome or
+treatment) (Q: can you see why?)</li>
+<li>It is distributed as a normal random variable as sample size grows. This
+allows us to easily compute confidence intervals and do hypothesis tests</li>
+<li>It allows us to use machine learning to estimate the treatment and outcome
+regressions to alleviate model misspecification bias</li>
+</ul>
 <p>Next, we will work towards constructing estimators with these same properties
 for the mediation parameters that we have introduced.</p>
 
