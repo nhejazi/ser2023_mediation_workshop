@@ -229,7 +229,7 @@
 \makeatother
 \subtitle{A Workshop at SER 2023}
 \author{\href{https://www.idiaz.xyz/}{Iván Díaz}, \href{https://nimahejazi.org}{Nima Hejazi}, \href{https://kararudolph.github.io/}{Kara Rudolph}}
-\date{updated: June 13, 2023}
+\date{updated: June 20, 2023}
 
 \begin{document}
 \maketitle
@@ -379,7 +379,7 @@ to efforts to optimally target available policy and program resources.
 These workshop materials were written using \href{http://bookdown.org/}{bookdown},
 and the complete source is available on
 \href{https://github.com/nhejazi/causal_mediation_workshops}{GitHub}. This version of
-the book was built with R version 4.3.0 (2023-04-21), \href{https://pandoc.org/}{pandoc}
+the book was built with R version 4.3.1 (2023-06-16), \href{https://pandoc.org/}{pandoc}
 version 2.19.2, and the following packages:
 
 \begin{longtable}[]{@{}
@@ -2094,13 +2094,13 @@ distribution \(\P\)
 \item
   The parameter functional for the NDE can also be expressed as a combination of
   regression and weighting:
-  \[\E\bigg[\color{RoyalBlue}{\bigg\{\frac{\I(A=0)}{\P(A=0\mid W)}\bigg\}}
+  \[\E\bigg[\color{RoyalBlue}{\frac{\I(A=0)}{\P(A=0\mid W)}}
     \times \color{Goldenrod}{\E(Y \mid A=1, M, W) -
     \E(Y \mid A=0, M, W)}\bigg]\]
 \item
   Thus, you can also construct a weighted estimator as
-  \[\frac{1}{n} \sum_{i=1}^n \bigg[\color{RoyalBlue}{ \bigg\{
-    \frac{\I(A_i=0)}{\hat{\P}(A_i=0\mid W_i)}\bigg\}} \times
+  \[\frac{1}{n} \sum_{i=1}^n \bigg[\color{RoyalBlue}{ 
+    \frac{\I(A_i=0)}{\hat{\P}(A_i=0\mid W_i)}} \times
     \color{Goldenrod}{\hat{\E}(Y \mid A=1, M_i, W_i) -
     \hat{\E}(Y \mid A=0, M_i, W_i)}\bigg]\]
 \end{itemize}
@@ -2702,12 +2702,14 @@ text(450, 0.01, paste0(
 \hypertarget{r-packages-for-estimation-of-the-causal-indirect-effects}{%
 \chapter{\texorpdfstring{\texttt{R} packages for estimation of the causal (in)direct effects}{R packages for estimation of the causal (in)direct effects}}\label{r-packages-for-estimation-of-the-causal-indirect-effects}}
 
-We'll now turn to working through a few examples of estimating the natural,
-interventional, and stochastic direct and indirect effects. As our running
+We'll now turn to working through a few examples of estimating natural and
+interventional direct and indirect effects. Note that we will be using the \href{https://github.com/nhejazi/medoutcon}{medoutcon R package}, but if your data scenario includes \emph{multiple} mediators and \emph{multiple} intermediate confounders, you should use the \href{https://github.com/nt-williams/HDmediation}{HDmediation R package}.
+
+As our running
 example, we'll a simple data set from an observational study of the relationship
 between BMI and kids' behavior, freely distributed with the \href{https://CRAN.R-project.org/package=mma}{\passthrough{\lstinline!mma!} \passthrough{\lstinline!R!} package
 on CRAN}. First, let's load the packages
-we'll be using and set a seed; then, load this data set and take a quick look
+we'll be using and set a seed; then, load this data set and take a quick look.
 
 \begin{lstlisting}[language=R]
 library(tidyverse)
@@ -3027,9 +3029,9 @@ interv_de_onestep <- medoutcon(
 )
 summary(interv_de_onestep)
 #> # A tibble: 1 x 7
-#>   lwr_ci param_est upr_ci var_est eif_mean estimator param                
-#>    <dbl>     <dbl>  <dbl>   <dbl>    <dbl> <chr>     <chr>                
-#> 1 -0.309     0.239  0.788  0.0782 1.94e-15 onestep   direct_interventional
+#>   lwr_ci param_est upr_ci var_est  eif_mean estimator param                
+#>    <dbl>     <dbl>  <dbl>   <dbl>     <dbl> <chr>     <chr>                
+#> 1 -0.309     0.239  0.788  0.0782 -1.09e-15 onestep   direct_interventional
 \end{lstlisting}
 
 \begin{itemize}
@@ -3055,9 +3057,9 @@ interv_ie_onestep <- medoutcon(
 )
 summary(interv_ie_onestep)
 #> # A tibble: 1 x 7
-#>   lwr_ci param_est upr_ci var_est eif_mean estimator param                  
-#>    <dbl>     <dbl>  <dbl>   <dbl>    <dbl> <chr>     <chr>                  
-#> 1  0.524      1.06   1.60  0.0758 1.69e-16 onestep   indirect_interventional
+#>   lwr_ci param_est upr_ci var_est  eif_mean estimator param                  
+#>    <dbl>     <dbl>  <dbl>   <dbl>     <dbl> <chr>     <chr>                  
+#> 1  0.524      1.06   1.60  0.0758 -1.66e-15 onestep   indirect_interventional
 \end{lstlisting}
 
 \begin{itemize}

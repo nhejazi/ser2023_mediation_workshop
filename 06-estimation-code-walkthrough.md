@@ -1,11 +1,13 @@
 # `R` packages for estimation of the causal (in)direct effects
 
-We'll now turn to working through a few examples of estimating the natural,
-interventional, and stochastic direct and indirect effects. As our running
+We'll now turn to working through a few examples of estimating natural and
+interventional direct and indirect effects. Note that we will be using the [medoutcon R package](https://github.com/nhejazi/medoutcon), but if your data scenario includes *multiple* mediators and *multiple* intermediate confounders, you should use the [HDmediation R package](https://github.com/nt-williams/HDmediation).
+
+As our running
 example, we'll a simple data set from an observational study of the relationship
 between BMI and kids' behavior, freely distributed with the [`mma` `R` package
 on CRAN](https://CRAN.R-project.org/package=mma). First, let's load the packages
-we'll be using and set a seed; then, load this data set and take a quick look
+we'll be using and set a seed; then, load this data set and take a quick look.
 
 
 ```r
@@ -263,9 +265,9 @@ interv_de_onestep <- medoutcon(
 )
 summary(interv_de_onestep)
 #> # A tibble: 1 x 7
-#>   lwr_ci param_est upr_ci var_est eif_mean estimator param                
-#>    <dbl>     <dbl>  <dbl>   <dbl>    <dbl> <chr>     <chr>                
-#> 1 -0.309     0.239  0.788  0.0782 1.94e-15 onestep   direct_interventional
+#>   lwr_ci param_est upr_ci var_est  eif_mean estimator param                
+#>    <dbl>     <dbl>  <dbl>   <dbl>     <dbl> <chr>     <chr>                
+#> 1 -0.309     0.239  0.788  0.0782 -1.09e-15 onestep   direct_interventional
 ```
 
 * We can similarly estimate the _interventional indirect effect_:
@@ -287,9 +289,9 @@ interv_ie_onestep <- medoutcon(
 )
 summary(interv_ie_onestep)
 #> # A tibble: 1 x 7
-#>   lwr_ci param_est upr_ci var_est eif_mean estimator param                  
-#>    <dbl>     <dbl>  <dbl>   <dbl>    <dbl> <chr>     <chr>                  
-#> 1  0.524      1.06   1.60  0.0758 1.69e-16 onestep   indirect_interventional
+#>   lwr_ci param_est upr_ci var_est  eif_mean estimator param                  
+#>    <dbl>     <dbl>  <dbl>   <dbl>     <dbl> <chr>     <chr>                  
+#> 1  0.524      1.06   1.60  0.0758 -1.66e-15 onestep   indirect_interventional
 ```
 
 * From the above, we can conclude that the effect of participation on a sports
@@ -385,7 +387,7 @@ stoch_decomp_onestep <- medshift(
 )
 summary(stoch_decomp_onestep)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>   18.763158   19.099417   19.435676    0.029434 -3.5415e-16     onestep
+#>   18.763158   19.099417   19.435676    0.029434 -3.5984e-16     onestep
 ```
 
 * To estimate the stochastic direct effect, an extra step is necessary -- we

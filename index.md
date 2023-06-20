@@ -5,7 +5,7 @@ subtitle: "A Workshop at SER 2023"
 author: "[Iván Díaz](https://www.idiaz.xyz/),
   [Nima Hejazi](https://nimahejazi.org),
   [Kara Rudolph](https://kararudolph.github.io/)"
-date: "updated: June 13, 2023"
+date: "updated: June 20, 2023"
 documentclass: book
 site: bookdown::bookdown_site
 bibliography: [book.bib, packages.bib]
@@ -133,7 +133,7 @@ to efforts to optimally target available policy and program resources.
 These workshop materials were written using [bookdown](http://bookdown.org/),
 and the complete source is available on
 [GitHub](https://github.com/nhejazi/causal_mediation_workshops). This version of
-the book was built with R version 4.3.0 (2023-04-21), [pandoc](https://pandoc.org/)
+the book was built with R version 4.3.1 (2023-06-16), [pandoc](https://pandoc.org/)
 version 2.19.2, and the following packages:
 
 
