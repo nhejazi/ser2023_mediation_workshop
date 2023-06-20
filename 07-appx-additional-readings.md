@@ -8,6 +8,15 @@ methods in this workshop, here we provide a few references for further reading.
 This list is not meant to be comprehensive, just some of our own work and some
 work by others that we know and consider interesting.
 
+## Mediation with multiple mediators and multiple intermediate confounders
+
+Note that the [medoutcon R package](https://github.com/nhejazi/medoutcon) works for multiple mediators but only a single, binary intermediate 
+confounder. If your data scenario includes *multiple* mediators and *multiple* intermediate confounders, you should use the [HDmediation R package](https://github.com/nt-williams/HDmediation). 
+
+- [Practical causal mediation analysis: extending nonparametric estimators to estimate the mediated effects of housing voucher receipt on adolescent risk behavior](https://arxiv.org/abs/2212.08164)
+  By Kara E. Rudolph, 
+  Nicholas Williams, and Iván Díaz
+
 ## Mediation with time-varying treatments, mediators, and covariates
 
 The issue of intermediate confounding is exacerbated in a setting with multiple
